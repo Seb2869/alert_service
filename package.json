@@ -1,0 +1,17 @@
+{
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "date-fns": "^2.30.0",
+    "dotenv": "^16.0.3",
+    "ethers": "^6.6.4",
+    "fs": "*",
+    "node-fetch": "^3.3.1",
+    "pg": "^8.11.0",
+    "sqlite3": "^5.1.6",
+    "web3": "^1.9.0"
+  }
+}
