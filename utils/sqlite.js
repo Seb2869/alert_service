@@ -5,9 +5,7 @@ function openDatabase(dbName) {
   return new sqlite3.Database(dbName, (err) => {
     if (err) {
       console.error('Error opening database:', err.message);
-    } else {
-      console.log('Connected to the database:', dbName);
-    }
+    } 
   });
 }
 
@@ -44,9 +42,7 @@ function closeDatabase(db) {
   db.close((err) => {
     if (err) {
       console.error('Error closing database:', err.message);
-    } else {
-      console.log('Database connection closed.');
-    }
+    } 
   });
 }
 

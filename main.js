@@ -3,11 +3,7 @@ import { newStep } from "./monitoring.js";
 async function execute(fn, interval) {
     try {
         const result = await fn();
-        if (result) {
-
-            console.log(`Success for load APY`)
-        }
-        else {
+        if (!result) {
             throw new Error(`Data load failed`);
         }
     } catch (error) {
@@ -17,6 +13,9 @@ async function execute(fn, interval) {
     }
 }
 
-const interval1Hour = 3000000;
+const interval1Hour = 3600000;
 
-setTimeout(() => execute(newStep, interval1Hour), 0);
+(async () => {
+    await execute(newStep, interval1Hour);
+})();
+

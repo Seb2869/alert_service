@@ -20,9 +20,7 @@ export const sendMessageToMessageBird = async (message) => {
             body: JSON.stringify(messagebird_data),
         });
 
-        if (response.ok) {
-            console.log('MessageBird: Сообщение успешно отправлено');
-        } else {
+        if (!(response.ok)) {
             console.error('MessageBird: Ошибка при отправке сообщения');
         }
     } catch (error) {
@@ -42,9 +40,7 @@ export const sendMessageToDiscord = async (message) => {
             body: JSON.stringify({ content: messageWithId }),
         });
 
-        if (response.ok) {
-            console.log('Discord: Сообщение успешно отправлено');
-        } else {
+        if (!(response.ok)) {
             console.error('Discord: Ошибка при отправке сообщения');
         }
     } catch (error) {
