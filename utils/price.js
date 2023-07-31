@@ -17,7 +17,7 @@ export const getPrice = async (tokens) => {
                 throw new Error('Network response was not ok.');
             }
         }
-        
+
         return data;
     }
     catch {
@@ -30,10 +30,10 @@ export const getLpBalancerPrice = async (pool) => {
     const qs = `{\n pools(where: {address: "${pool}"}) \n {\n address \n  totalLiquidity \n  totalShares } \n}`;
     const table = `pools`;
     const data = await getDataFromSG(graph, qs, table);
-    const {totalLiquidity,totalShares} = data[0];
+    const { totalLiquidity, totalShares } = data[0];
     const price = totalLiquidity / totalShares;
     return price;
-  }
+}
 
 export const getPriceForContract = async (address, chain = 'ethereum') => {
     try {
@@ -49,13 +49,30 @@ export const getPriceForContract = async (address, chain = 'ethereum') => {
             }
         }
         const key = address.toLowerCase();
-        const price = data[key]['usd']?? null;
+        const price = data[key]['usd'] ?? null;
         return price;
     }
     catch (error) {
         console.log(error);
         return null;
     }
-  
+
+}
+
+export const getPriceForDefiLama = async (address) => {
+    try {
+        const response = await fetch(`https://coins.llama.fi/prices/current/ethereum:${address}`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
+        }
+        const jsonString = await response.text();
+        const data = JSON.parse(jsonString);
+        const price = data.coins[`ethereum:${address}`].price;
+        return price;
+    }
+    catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 

@@ -1,6 +1,8 @@
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
+import { openDatabase, runQuery, closeDatabase, getRows } from "./sqlite.js";
+
 
 const envPath = "../.env";
 
@@ -108,3 +110,66 @@ const result = JSON.parse(responseText);
 const { apys: curveApys } = result;
 return curveApys
 }
+
+
+export const getAlertsTS = async () => {
+  const db = openDatabase(dbName);
+  const alertsDictionary = {};
+  try {
+      const query = `SELECT strategy_id, alert_ts FROM alerts`;
+      const rows = await getRows(db, query);
+      for (const row of rows) {
+          alertsDictionary[row.strategy_id] = row.alert_ts;
+      }
+  } catch (err) {
+      console.error('Error fetching alerts:', err.message);
+      throw err;
+  }
+  finally {
+      closeDatabase(db);
+      return alertsDictionary;
+  }
+};
+
+export const getThreshold = async () => {
+  const db = openDatabase(dbName);
+  const thresholdDictionary = {};
+  try {
+      const query = `SELECT strategy_id, threshold FROM thresholds`;
+      const rows = await getRows(db, query);
+      for (const row of rows) {
+        thresholdDictionary[row.strategy_id] = row.threshold;
+      }
+  } catch (err) {
+      console.error('Error fetching alerts:', err.message);
+      throw err;
+  }
+  finally {
+      closeDatabase(db);
+      return thresholdDictionary;
+  }
+};
+
+
+export const writeAlertTs = async (strategy_id, newTS, newRow) => {
+  const db = openDatabase(dbName);
+  try {
+      const query = newRow
+      ? 
+      `INSERT INTO alerts (alert_ts, strategy_id) VALUES (?, ?)` 
+      :
+      `UPDATE alerts SET alert_ts = ? WHERE strategy_id = ?`
+      ;
+      await runQuery(
+          db,
+          query,
+          [newTS, strategy_id]
+      );
+  } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+      return false;
+  }
+  finally {
+      closeDatabase(db);
+  }
+};

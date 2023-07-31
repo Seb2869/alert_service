@@ -1,4 +1,5 @@
-import { newStep } from "./monitoring.js";
+import { newStep } from "./monitoringApyTvl.js";
+import { poolCheck } from "./monitoringPools.js";
 
 async function execute(fn, interval) {
     try {
@@ -16,6 +17,6 @@ async function execute(fn, interval) {
 const interval1Hour = 3600000;
 
 (async () => {
-    await execute(newStep, interval1Hour);
+    await execute(poolCheck, interval1Hour);
 })();
 

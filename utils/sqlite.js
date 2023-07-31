@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 
 
-function openDatabase(dbName) {
+export const openDatabase = (dbName) => {
   return new sqlite3.Database(dbName, (err) => {
     if (err) {
       console.error('Error opening database:', err.message);
@@ -10,7 +10,7 @@ function openDatabase(dbName) {
 }
 
 
-function runQuery(db, query, params = []) {
+export const runQuery = async (db, query, params = []) => {
   return new Promise((resolve, reject) => {
     db.run(query, params, function (err) {
       if (err) {
@@ -24,7 +24,7 @@ function runQuery(db, query, params = []) {
 }
 
 
-function getRows(db, query, params = []) {
+export const getRows = async (db, query, params = []) => {
   return new Promise((resolve, reject) => {
     db.all(query, params, (err, rows) => {
       if (err) {
@@ -37,13 +37,10 @@ function getRows(db, query, params = []) {
   });
 }
 
-
-function closeDatabase(db) {
+export const closeDatabase = (db) => {
   db.close((err) => {
     if (err) {
       console.error('Error closing database:', err.message);
     } 
   });
 }
-
-export { openDatabase, runQuery, getRows, closeDatabase };

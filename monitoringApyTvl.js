@@ -3,7 +3,7 @@ import { ETH_NODE, ARB_NODE, dbName } from "./utils/utils.js";
 import { strategies } from "./Strategy/apyStrategy.js";
 import { strategiesTVL } from "./Strategy/tvlStrategy.js";
 import { getPrice } from "./utils/price.js";
-import { openDatabase, runQuery, getRows, closeDatabase } from './utils/sqlite.js';
+import { openDatabase, runQuery, closeDatabase } from "./utils/sqlite.js";
 
 
 const getApy = async (strategy, provider, prices) => {
@@ -31,8 +31,6 @@ const insertTvl = async (record, db) => {
     else {
         return true
     }
-
-
 }
 
 const insertApy = async (record, db) => {
@@ -88,7 +86,7 @@ const loadAPY = async (provider) => {
         'frax-share',
     ]);
     let result = false;
-    if (prices && strategies) {
+    if (prices && strategies?.length) {
         const data = await Promise.all(strategies.map(strategy => getApy(strategy, provider, prices)));
         const filteredData = data.filter(elem => elem != undefined);
         console.log(filteredData);
