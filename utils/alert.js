@@ -31,7 +31,7 @@ export const sendMessageToMessageBird = async (message) => {
 
 export const sendMessageToDiscord = async (message) => {
     try {
-        const messageWithId = message + `. <@${idMatvey}>, <@${idMaksim}`;
+        const messageWithId = message + `. <@${idMatvey}>, <@${idMaksim}>`;
         const response = await fetch(discordUrl, {
             method: 'POST',
             headers: {

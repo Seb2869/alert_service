@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import { ETH_NODE, ARB_NODE, getAlertsTS, writeAlertTs } from "./utils/utils.js";
-import { pools } from "./Strategy/pools.js";
+import { pools } from "./strategy_list/pools.js";
 import { getPriceForDefiLama } from "./utils/price.js";
-
+import { sendMessageToDiscord } from "./utils/alert.js";
 
 const checkBalance = async (pool, provider, alertsTS) => {
     try {
-        const { poolId, chain, contractAddress, method, threshold, params, needPrice } = pool;
+        const { poolId, chain, contractAddress, method, threshold, params, needPrice, message } = pool;
         const stratProvider = provider[chain];
         if (needPrice) {
             const [poolId, tokens] = params;
@@ -16,7 +16,12 @@ const checkBalance = async (pool, provider, alertsTS) => {
             params.push(price);
         }
         const resultArr = await method(stratProvider, contractAddress, threshold, ...params);
-        const [result,] = resultArr;
+        const [result, percent] = resultArr;
+        let replacedString = message.replace("{threshold}", threshold);
+
+                if (replacedString.includes("{percent}")) {
+                    replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
+                }
         if (result) {
             const now = Math.floor(Date.now() / 1000);
             const lastAlertTS = alertsTS[poolId] ? alertsTS[poolId] : 0;
@@ -24,7 +29,11 @@ const checkBalance = async (pool, provider, alertsTS) => {
             if (diff > 3600) {
                 const newRow = lastAlertTS === 0 ? true : false;
                 await writeAlertTs(poolId, now, newRow);
-                // отправка уведомления
+                let replacedString = message.replace("{threshold}", threshold);
+                if (replacedString.includes("{percent}")) {
+                    replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
+                }
+                await sendMessageToDiscord(replacedString);
             }
         }
         return true

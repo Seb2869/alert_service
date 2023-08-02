@@ -30,6 +30,8 @@ export const pools = [
         threshold: 70,
         params: [],
         needPrice: false,
+        message: `Доля "cvxFXS" превышает {threshold}% от общего баланса в пуле curve. Доля "cvxFXS": {percent}% `,
+        
     },
     {
 
@@ -40,6 +42,8 @@ export const pools = [
         threshold: 85,
         params: [],
         needPrice: false,
+        message: `Доля "frxETH" превышает {threshold}% от общего баланса в пуле curve. Доля "frxETH": {percent}% `,
+        
     },
     {
         poolId: 'POOL_CURVE_RETH',
@@ -49,6 +53,8 @@ export const pools = [
         threshold: 55,
         params: [],
         needPrice: false,
+        message: `Доля "CURVE rETH" превышает {threshold}% от общего баланса в пуле curve. Доля "CURVE rETH": {percent}% `,
+        
     },
     {
         poolId: 'POOL_CURVE_STETH',
@@ -58,6 +64,8 @@ export const pools = [
         threshold: 55,
         params: [],
         needPrice: false,
+        message: `Доля "stETH" превышает {threshold}% от общего баланса в пуле curve. Доля "stETH": {percent}% `,
+        
     },
     {
         poolId: 'POOL_CURVE_YCRV',
@@ -67,6 +75,8 @@ export const pools = [
         threshold: 90,
         params: [],
         needPrice: false,
+        message: `Доля "yCRV" превышает {threshold}% от общего баланса в пуле curve. Доля "yCRV": {percent}% `,
+        
     },
     {
         poolId: 'POOL_CURVE_3POOL',
@@ -76,6 +86,7 @@ export const pools = [
         threshold: 40,
         params: [],
         needPrice: false,
+        message: `Доля одного из трех токенов в пуле 3pool curve превышает {threshold}% от общего баланса`,
     },
      {
         poolId: 'POOL_AURA_BAL',
@@ -85,6 +96,7 @@ export const pools = [
         threshold: 60,
         params: [AURA_BAL_POOL_ID, AURA_BAL_TOKENS],
         needPrice: true,
+        message: `Доля "auraBAL" превышает {threshold}% от общего долларового баланса в пуле aura. Доля "auraBAL": {percent}% `,
     },
     {
         poolId: 'POOL_AURA_RETH_ETH',
@@ -94,5 +106,6 @@ export const pools = [
         threshold: 55,
         params: [AURA_RETH_POOL_ID, AURA_RETH_TOKENS],
         needPrice: false,
+        message: `Доля "AURA rETH" превышает {threshold}% от общего баланса в пуле aura. Доля "AURA rETH": {percent}% `,
     }, 
 ]

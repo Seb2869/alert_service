@@ -1,7 +1,18 @@
 import { ethers } from "ethers";
-import { ETH_NODE, ARB_NODE, dbName } from "./utils/utils.js";
-import { strategies } from "./Strategy/apyStrategy.js";
-import { strategiesTVL } from "./Strategy/tvlStrategy.js";
+import {
+    ETH_NODE,
+    ARB_NODE,
+    dbName,
+    threshold1,
+    threshold2,
+    getLastData,
+    calculateDeviationPercent,
+    writeAlertTs,
+    getAlertsTS,
+} from "./utils/utils.js";
+import { sendMessageToDiscord, sendMessageToMessageBird } from "./utils/alert.js";
+import { strategies } from "./strategy_list/apyStrategy.js";
+import { strategiesTVL } from "./strategy_list/tvlStrategy.js";
 import { getPrice } from "./utils/price.js";
 import { openDatabase, runQuery, closeDatabase } from "./utils/sqlite.js";
 
@@ -69,7 +80,6 @@ const saveToDB = async (data, fn) => {
 }
 
 const loadAPY = async (provider) => {
-    console.log(5);
     const prices = await getPrice(['balancer',
         'aura-finance',
         'aura-bal',
@@ -89,7 +99,6 @@ const loadAPY = async (provider) => {
     if (prices && strategies?.length) {
         const data = await Promise.all(strategies.map(strategy => getApy(strategy, provider, prices)));
         const filteredData = data.filter(elem => elem != undefined);
-        console.log(filteredData);
         if (filteredData.length > 0) {
             result = await saveToDB(filteredData, insertApy);
         }
@@ -101,17 +110,57 @@ const loadAPY = async (provider) => {
     return result;
 }
 
-const checkAPY = async () => {
 
+const checkApyTvl = async (alertsTS) => {
+    const oneDay = 24 * 60 * 60;
+    const oneWeek = 7 * oneDay;
+    const now = Math.floor(Date.now() / 1000);
+    const dateDayAgo = now - oneDay;
+    const date7DayAgo = now - oneWeek;
+    const lastData = await getLastData(dateDayAgo, date7DayAgo);
+    await Promise.all(lastData.map(async (data) => {
+        Object.entries(data).forEach(([key, valueArray]) => {
+            valueArray.map(async row => {
+                return await checkPercent(row, key, alertsTS)
+            })
+        });
+    }));
 }
 
-const checkTVL = async () => {
 
+const checkPercent = async (strategy, key, alertsTS) => {
+    const { strategy_id, last_value, avg_value_daily, avg_value_7_days } = strategy;
+    const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
+    const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
+    if (deviationPercentDaily > threshold1) {
+        const message = `Стратегия ${strategy_id}: превышен порог ${threshold1}% отклонения текущего значения ${key.toUpperCase()} 
+        от среднего ${key.toUpperCase()} за день (${last_value.toFixed(2)}, ${avg_value_daily.toFixed(2)}, ${deviationPercentDaily.toFixed(2)}%)`;
+        const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
+        const now = Math.floor(Date.now() / 1000);
+        const diff = now - lastAlertTS;
+        if (diff > 3600) {
+
+            const newRow = lastAlertTS === 0 ? true : false;
+            await writeAlertTs(strategy_id, now, newRow);
+            await sendMessageToDiscord(message);
+        }
+    }
+    if (deviationPercent7Days > threshold2) {
+        const message = `Стратегия ${strategy_id}: превышен порог ${threshold2}% отклонения текущего значения ${key.toUpperCase()} 
+        от среднего ${key.toUpperCase()} за неделю (${last_value.toFixed(2)}, ${avg_value_7_days.toFixed(2)}, ${deviationPercentDaily.toFixed(2)}%)`;
+        const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
+        const now = Math.floor(Date.now() / 1000);
+        const diff = now - lastAlertTS;
+        if (diff > 3600) {
+            const newRow = lastAlertTS === 0 ? true : false;
+            await writeAlertTs(poolId, now, newRow);
+            await sendMessageToMessageBird(message);
+        }
+    }
 }
 
 
 const getTvl = async (strategy, provider) => {
-
     const { strategy_id, contractAddress, abi, method, params, chain } = strategy;
     const stratProvider = provider[chain];
     const contract = new ethers.Contract(contractAddress, abi, stratProvider);
@@ -129,7 +178,6 @@ const loadTVL = async (provider) => {
     let result = false;
     const data = await Promise.all(strategiesTVL.map(strategy => getTvl(strategy, provider)));
     const filteredData = data.filter(elem => elem != undefined);
-    console.log(filteredData);
     if (filteredData.length > 0) {
         result = await saveToDB(filteredData, insertTvl);
     }
@@ -137,7 +185,7 @@ const loadTVL = async (provider) => {
 }
 
 
-export const newStep = async () => {
+export const apyLoadCheck = async () => {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
     const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
     const provider = {
@@ -145,9 +193,9 @@ export const newStep = async () => {
         42161: arbProvider,
     };
     const resultLoad = await loadAPY(provider);
-    const resultCheck = await checkAPY();
     const resultLoadTvl = await loadTVL(provider);
-    const resultCheckTvl = await checkTVL();
+    const alertsTS = await getAlertsTS();
+    const resultCheck = await checkApyTvl(alertsTS);
     return resultLoad;
 }
 

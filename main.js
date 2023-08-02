@@ -1,7 +1,7 @@
-import { newStep } from "./monitoringApyTvl.js";
+import { apyLoadCheck } from "./monitoringApyTvl.js";
 import { poolCheck } from "./monitoringPools.js";
 
-async function execute(fn, interval) {
+const execute = async (fn, interval) => {
     try {
         const result = await fn();
         if (!result) {
@@ -15,8 +15,10 @@ async function execute(fn, interval) {
 }
 
 const interval1Hour = 3600000;
+const interval10Min = 600000;
 
 (async () => {
-    await execute(poolCheck, interval1Hour);
+    await execute(apyLoadCheck, interval1Hour);
+    await execute(poolCheck, interval10Min);
 })();
 
