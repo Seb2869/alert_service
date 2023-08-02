@@ -26,7 +26,7 @@ const checkBalance = async (pool, provider, alertsTS) => {
             const now = Math.floor(Date.now() / 1000);
             const lastAlertTS = alertsTS[poolId] ? alertsTS[poolId] : 0;
             const diff = now - lastAlertTS;
-            if (diff > 3600) {
+            if (diff > (3600 * 8)) {
                 const newRow = lastAlertTS === 0 ? true : false;
                 await writeAlertTs(poolId, now, newRow);
                 let replacedString = message.replace("{threshold}", threshold);
@@ -56,7 +56,6 @@ const loadAllPools = async (provider) => {
     }
     return result;
 }
-
 
 export const poolCheck = async () => {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);

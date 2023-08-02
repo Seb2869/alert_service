@@ -138,7 +138,7 @@ const checkPercent = async (strategy, key, alertsTS) => {
         const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
         const now = Math.floor(Date.now() / 1000);
         const diff = now - lastAlertTS;
-        if (diff > 3600) {
+        if (diff > (3600 * 8)) {
 
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
@@ -151,7 +151,7 @@ const checkPercent = async (strategy, key, alertsTS) => {
         const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
         const now = Math.floor(Date.now() / 1000);
         const diff = now - lastAlertTS;
-        if (diff > 3600) {
+        if (diff > (3600 * 8)) {
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(poolId, now, newRow);
             await sendMessageToMessageBird(message);
