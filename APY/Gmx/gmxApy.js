@@ -13,5 +13,4 @@ export const getGmxApy = async (provider, GMX_GMX, prices) => {
     const tvlUsd = await getSupplyTVL(provider, GMX_GMX, priceGmx);
     const apy = tokensPerInterval * 3600 * 24 * 365 * priceWEth / tvlUsd * 100;
     return [apy, tvlUsd]
-
 }

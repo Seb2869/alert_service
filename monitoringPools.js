@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
-import { ETH_NODE, ARB_NODE, getAlertsTS, writeAlertTs } from "./utils/utils.js";
+import { ETH_NODE, ARB_NODE } from "./utils/utils.js";
+import { getAlertsTS, writeAlertTs } from "./utils/database.js";
 import { pools } from "./strategy_list/pools.js";
 import { getPriceForDefiLama } from "./utils/price.js";
 import { sendMessageToDiscord } from "./utils/alert.js";
@@ -33,7 +34,8 @@ const checkBalance = async (pool, provider, alertsTS) => {
                 if (replacedString.includes("{percent}")) {
                     replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
                 }
-                await sendMessageToDiscord(replacedString);
+                // await sendMessageToDiscord(replacedString);
+                console.log(replacedString);
             }
         }
         return true

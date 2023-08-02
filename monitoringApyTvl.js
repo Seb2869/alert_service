@@ -5,16 +5,15 @@ import {
     dbName,
     threshold1,
     threshold2,
-    getLastData,
     calculateDeviationPercent,
-    writeAlertTs,
-    getAlertsTS,
 } from "./utils/utils.js";
+import { openDatabase, runQuery, closeDatabase } from "./utils/sqlite.js";
+import { getLastData, writeAlertTs, getAlertsTS } from "./utils/database.js";
 import { sendMessageToDiscord, sendMessageToMessageBird } from "./utils/alert.js";
 import { strategies } from "./strategy_list/apyStrategy.js";
 import { strategiesTVL } from "./strategy_list/tvlStrategy.js";
 import { getPrice } from "./utils/price.js";
-import { openDatabase, runQuery, closeDatabase } from "./utils/sqlite.js";
+
 
 
 const getApy = async (strategy, provider, prices) => {
@@ -133,8 +132,7 @@ const checkPercent = async (strategy, key, alertsTS) => {
     const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
     const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
     if (deviationPercentDaily > threshold1) {
-        const message = `Стратегия ${strategy_id}: превышен порог ${threshold1}% отклонения текущего значения ${key.toUpperCase()} 
-        от среднего ${key.toUpperCase()} за день (${last_value.toFixed(2)}, ${avg_value_daily.toFixed(2)}, ${deviationPercentDaily.toFixed(2)}%)`;
+        const message = `Стратегия ${strategy_id}: превышен порог ${threshold1}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за день (${deviationPercentDaily.toFixed(2)}%)`;
         const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
         const now = Math.floor(Date.now() / 1000);
         const diff = now - lastAlertTS;
@@ -142,19 +140,20 @@ const checkPercent = async (strategy, key, alertsTS) => {
 
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
-            await sendMessageToDiscord(message);
+            console.log(message);
+            // await sendMessageToDiscord(message);
         }
     }
     if (deviationPercent7Days > threshold2) {
-        const message = `Стратегия ${strategy_id}: превышен порог ${threshold2}% отклонения текущего значения ${key.toUpperCase()} 
-        от среднего ${key.toUpperCase()} за неделю (${last_value.toFixed(2)}, ${avg_value_7_days.toFixed(2)}, ${deviationPercentDaily.toFixed(2)}%)`;
+        const message = `Стратегия ${strategy_id}: превышен порог ${threshold2}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за неделю (${deviationPercentDaily.toFixed(2)}%)`;
         const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
         const now = Math.floor(Date.now() / 1000);
         const diff = now - lastAlertTS;
         if (diff > (3600 * 8)) {
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(poolId, now, newRow);
-            await sendMessageToMessageBird(message);
+            console.log(message, "!!!!");
+            // await sendMessageToMessageBird(message);
         }
     }
 }
