@@ -129,10 +129,11 @@ const checkApyTvl = async (alertsTS) => {
 
 const checkPercent = async (strategy, key, alertsTS) => {
     const { strategy_id, last_value, avg_value_daily, avg_value_7_days } = strategy;
+   
     const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
     const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
     if (deviationPercentDaily > threshold1) {
-        const message = `Стратегия ${strategy_id}: превышен порог ${threshold1}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за день (${deviationPercentDaily.toFixed(2)}%)`;
+        const message = `Стратегия ${strategy_id}: превышен порог ${threshold1}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за день (-${deviationPercentDaily.toFixed(2)}%)`;
         const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
         const now = Math.floor(Date.now() / 1000);
         const diff = now - lastAlertTS;
@@ -140,20 +141,18 @@ const checkPercent = async (strategy, key, alertsTS) => {
 
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
-            console.log(message);
-            // await sendMessageToDiscord(message);
+            await sendMessageToDiscord(message);
         }
     }
     if (deviationPercent7Days > threshold2) {
-        const message = `Стратегия ${strategy_id}: превышен порог ${threshold2}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за неделю (${deviationPercentDaily.toFixed(2)}%)`;
+        const message = `Стратегия ${strategy_id}: превышен порог ${threshold2}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за неделю (-${deviationPercentDaily.toFixed(2)}%)`;
         const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
         const now = Math.floor(Date.now() / 1000);
         const diff = now - lastAlertTS;
         if (diff > (3600 * 8)) {
             const newRow = lastAlertTS === 0 ? true : false;
-            await writeAlertTs(poolId, now, newRow);
-            console.log(message, "!!!!");
-            // await sendMessageToMessageBird(message);
+            await writeAlertTs(strategy_id, now, newRow);
+            await sendMessageToMessageBird(message);
         }
     }
 }

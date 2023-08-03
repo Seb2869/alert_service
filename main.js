@@ -22,7 +22,7 @@ const interval2Min = 120000;
 (async () => {
     await execute(eventCheck, interval2Min);
     await execute(poolCheck, interval10Min);
-    await execute(apyLoadCheck, interval10Min);
+    await execute(apyLoadCheck, interval1Hour);
 
 })();
 
