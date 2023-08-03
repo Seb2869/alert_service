@@ -10,8 +10,9 @@ export const checkEvent = async (vault, provider, scan, lastBlocks, ethPrice) =>
     const { vaultId, chain, contractAddress,decimals } = vault;
     const vaultProvider = provider[chain];
     const vaultScan = scan[chain];
+    const defBlock = chain===1? 17823116 : 117660826;
     const blockNumber = await vaultProvider.getBlockNumber();
-    const lastBlock = lastBlocks[vaultId]?? 17823116;
+    const lastBlock = lastBlocks[vaultId]?? defBlock;
     await getEvents(vaultId, lastBlock, blockNumber, vaultProvider, vaultScan, contractAddress, decimals, ethPrice);
     const newRow = lastBlocks[vaultId]? false : true;
     await writeLastBlock(vaultId, blockNumber+1, newRow);
