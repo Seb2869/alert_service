@@ -35,6 +35,7 @@ const checkBalance = async (pool, provider, alertsTS) => {
                     replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
                 }
                 await sendMessageToDiscord(replacedString);
+                // console.log(replacedString);
                 
             }
         }

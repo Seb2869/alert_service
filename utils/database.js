@@ -73,7 +73,7 @@ export const getLastBlock = async () => {
             lastBlockDictionary[row.vault] = row.last_block;
         }
     } catch (err) {
-        console.error('Error fetching alerts:', err.message);
+        // console.error('Error fetching alerts:', err.message);
         throw err;
     }
     finally {

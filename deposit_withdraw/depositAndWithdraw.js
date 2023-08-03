@@ -45,6 +45,7 @@ export const getEvents = async (
             : `\n${vault} vault:\nTotal deposits: ${ethers.formatUnits(totalDeposit, decimals)} ETH (${(etherPrice * parseFloat(ethers.formatUnits(totalDeposit, decimals))).toFixed(2)}$).\nTVL: ${tvl.toFixed(2)} ETH (${tvlUsd.toFixed(2)}$).\nTransactions:\n${depositLinks}`
             
             await sendTxMessage(message, 'Deposit');
+            // console.log(message);
         }
 
         filterParams.topics = [withdrawEventSignature];
@@ -57,7 +58,8 @@ export const getEvents = async (
             ? `\n${vault} vault:\nTotal withdrawals: ${ethers.formatUnits(totalWithdraw, decimals)} USDC.\nTVL: ${tvlUsd.toFixed(2)} USDC.\nTransactions:\n${withdrawLinks}`
             : `\n${vault} vault:\nTotal withdrawals: ${ethers.formatUnits(totalWithdraw, decimals)} ETH (${(etherPrice * parseFloat(ethers.formatUnits(totalWithdraw, decimals))).toFixed(2)}$).\nTVL: ${tvl.toFixed(2)} ETH (${tvlUsd.toFixed(2)}$).\nTransactions:\n${depositLinks}`
             
-           await sendTxMessage(message, 'Withdraw');
+            await sendTxMessage(message, 'Withdraw');
+           // console.log(message);
         }
 
         return true

@@ -141,6 +141,7 @@ const checkPercent = async (strategy, key, alertsTS) => {
 
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
+            // console.log(message);
             await sendMessageToDiscord(message);
         }
     }
@@ -153,6 +154,7 @@ const checkPercent = async (strategy, key, alertsTS) => {
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
             await sendMessageToMessageBird(message);
+            // console.log(message);
         }
     }
 }
