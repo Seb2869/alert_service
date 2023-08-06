@@ -36,7 +36,6 @@ const checkBalance = async (pool, provider, alertsTS) => {
                 }
                 await sendMessageToDiscord(replacedString);
                 // console.log(replacedString);
-                
             }
         }
         return true

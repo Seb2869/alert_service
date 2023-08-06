@@ -153,8 +153,8 @@ const checkPercent = async (strategy, key, alertsTS) => {
         if (diff > (3600 * 8)) {
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
-            await sendMessageToMessageBird(message);
-            // console.log(message);
+            // await sendMessageToMessageBird(message);
+            console.log(message);
         }
     }
 }

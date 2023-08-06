@@ -118,5 +118,5 @@ export const getCurveApy = async () => {
 
 
 export const calculateDeviationPercent = (value1, value2) => {
-  return ((value2-value1) / value1) * 100;
+  return ((value2-value1) / value2) * 100;
 }

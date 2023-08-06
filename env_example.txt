@@ -1,0 +1,17 @@
+ETHEREUM_NODE = https://eth.llamarpc.com
+ARBITRUM_NODE = https://arb1.croswap.com/rpc
+
+DB_NAME = data/data.db
+
+MESSAGEBIRD_URL = https://flows.messagebird.com/flows/b190852a-3259-4b1f-84de-6412b59bd6a6/invoke
+DISCORD_URL = https://discord.com/api/webhooks/1124275724627496981/07EBRY26dkgLPX7z1m_1TDntd1ppsqZy8zkaf9uBC9hNOXm7u5sIVra_xqaNrictK7ZS
+
+DISCORD_DEPOSIT_WEBHOOK_URL = https://discord.com/api/webhooks/1134438793680781404/jjQkTwYrVcru7cWiyx34lL-YguE_WCjNzQ0iCTV-OzpNnyY3gqQTF5h6rI1pSwkIIn_C
+DISCORD_WITHDRAW_WEBHOOK_URL = https://discord.com/api/webhooks/1134438949755035658/rDGT4onzz-woDrZXIU3RfeVCU60QkBR5OycW7QX9M9U08ryWpY3wGTvw-JVGo3RGWHFB
+
+
+MAKSIM_ID = 958364388736262214
+MATVEY_ID = 912627483541639189
+
+THRESHOLD1 = 15
+THRESHOLD2 = 30
