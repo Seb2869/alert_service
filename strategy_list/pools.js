@@ -31,6 +31,7 @@ export const pools = [
         params: [],
         needPrice: false,
         message: `Доля "cvxFXS" превышает {threshold}% от общего баланса в пуле curve. Доля "cvxFXS": {percent}% `,
+        status: true,
         
     },
     {
@@ -43,6 +44,7 @@ export const pools = [
         params: [],
         needPrice: false,
         message: `Доля "frxETH" превышает {threshold}% от общего баланса в пуле curve. Доля "frxETH": {percent}% `,
+        status: true,
         
     },
     {
@@ -54,6 +56,7 @@ export const pools = [
         params: [],
         needPrice: false,
         message: `Доля "CURVE rETH" превышает {threshold}% от общего баланса в пуле curve. Доля "CURVE rETH": {percent}% `,
+        status: true,
         
     },
     {
@@ -65,6 +68,7 @@ export const pools = [
         params: [],
         needPrice: false,
         message: `Доля "stETH" превышает {threshold}% от общего баланса в пуле curve. Доля "stETH": {percent}% `,
+        status: true,
         
     },
     {
@@ -76,6 +80,7 @@ export const pools = [
         params: [],
         needPrice: false,
         message: `Доля "yCRV" превышает {threshold}% от общего баланса в пуле curve. Доля "yCRV": {percent}% `,
+        status: true,
         
     },
     {
@@ -87,6 +92,7 @@ export const pools = [
         params: [],
         needPrice: false,
         message: `Доля одного из трех токенов в пуле 3pool curve превышает {threshold}% от общего баланса`,
+        status: false,
     },
      {
         poolId: 'POOL_AURA_BAL',
@@ -97,6 +103,7 @@ export const pools = [
         params: [AURA_BAL_POOL_ID, AURA_BAL_TOKENS],
         needPrice: true,
         message: `Доля "auraBAL" превышает {threshold}% от общего долларового баланса в пуле aura. Доля "auraBAL": {percent}% `,
+        status: true,
     },
     {
         poolId: 'POOL_AURA_RETH_ETH',
@@ -107,5 +114,6 @@ export const pools = [
         params: [AURA_RETH_POOL_ID, AURA_RETH_TOKENS],
         needPrice: false,
         message: `Доля "AURA rETH" превышает {threshold}% от общего баланса в пуле aura. Доля "AURA rETH": {percent}% `,
+        status: true,
     }, 
 ]

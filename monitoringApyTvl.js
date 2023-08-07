@@ -14,8 +14,6 @@ import { strategies } from "./strategy_list/apyStrategy.js";
 import { strategiesTVL } from "./strategy_list/tvlStrategy.js";
 import { getPrice } from "./utils/price.js";
 
-
-
 const getApy = async (strategy, provider, prices) => {
     const { strategy_id, method, params, chain } = strategy;
     const stratProvider = provider[chain];
@@ -129,7 +127,7 @@ const checkApyTvl = async (alertsTS) => {
 
 const checkPercent = async (strategy, key, alertsTS) => {
     const { strategy_id, last_value, avg_value_daily, avg_value_7_days } = strategy;
-   
+
     const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
     const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
     if (deviationPercentDaily > threshold1) {
@@ -141,8 +139,8 @@ const checkPercent = async (strategy, key, alertsTS) => {
 
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
-            // console.log(message);
-            await sendMessageToDiscord(message);
+             console.log(message);
+             await sendMessageToDiscord(message);
         }
     }
     if (deviationPercent7Days > threshold2) {
@@ -153,7 +151,7 @@ const checkPercent = async (strategy, key, alertsTS) => {
         if (diff > (3600 * 8)) {
             const newRow = lastAlertTS === 0 ? true : false;
             await writeAlertTs(strategy_id, now, newRow);
-            // await sendMessageToMessageBird(message);
+            await sendMessageToMessageBird(message);
             console.log(message);
         }
     }
@@ -186,16 +184,22 @@ const loadTVL = async (provider) => {
 
 
 export const apyLoadCheck = async () => {
-    const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
-    const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
-    const provider = {
-        1: ethProvider,
-        42161: arbProvider,
-    };
-    const resultLoad = await loadAPY(provider);
-    const resultLoadTvl = await loadTVL(provider);
-    const alertsTS = await getAlertsTS();
-    const resultCheck = await checkApyTvl(alertsTS);
-    return resultLoad;
+    try {
+        const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
+        const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
+        const provider = {
+            1: ethProvider,
+            42161: arbProvider,
+        };
+        const resultLoad = await loadAPY(provider);
+        const resultLoadTvl = await loadTVL(provider);
+        const alertsTS = await getAlertsTS();
+        const resultCheck = await checkApyTvl(alertsTS);
+        return resultLoad;
+    }
+    catch (error) {
+        console.log(error);
+        return false;
+    }
 }
 

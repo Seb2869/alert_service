@@ -20,9 +20,9 @@ const checkBalance = async (pool, provider, alertsTS) => {
         const [result, percent] = resultArr;
         let replacedString = message.replace("{threshold}", threshold);
 
-                if (replacedString.includes("{percent}")) {
-                    replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
-                }
+        if (replacedString.includes("{percent}")) {
+            replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
+        }
         if (result) {
             const now = Math.floor(Date.now() / 1000);
             const lastAlertTS = alertsTS[poolId] ? alertsTS[poolId] : 0;
@@ -35,7 +35,7 @@ const checkBalance = async (pool, provider, alertsTS) => {
                     replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
                 }
                 await sendMessageToDiscord(replacedString);
-                // console.log(replacedString);
+                console.log(replacedString);
             }
         }
         return true
@@ -46,27 +46,39 @@ const checkBalance = async (pool, provider, alertsTS) => {
 }
 
 const loadAllPools = async (provider) => {
-    const alertsTS = await getAlertsTS();
-    let result = false;
-    if (pools?.length) {
-        const data = await Promise.all(pools.map(pool => checkBalance(pool, provider, alertsTS)));
-        result = data.reduce((acc, value) => acc && value, true);
+    try {
+        const alertsTS = await getAlertsTS();
+        let result = false;
+        const filterPools = pools.filter(pool => pool.status);
+        if (filterPools?.length) {
+            const data = await Promise.all(filterPools.map(pool => checkBalance(pool, provider, alertsTS)));
+            result = data.reduce((acc, value) => acc && value, true);
+        }
+        else {
+            console.log("price error");
+            return false;
+        }
+        return result;
     }
-    else {
-        console.log("price error");
+    catch (error) {
+        console.log(error)
         return false;
     }
-    return result;
 }
 
 export const poolCheck = async () => {
-    const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
-    const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
-    const provider = {
-        1: ethProvider,
-        42161: arbProvider,
-    };
-    const resultCheck = await loadAllPools(provider);
-    return resultCheck;
+    try {
+        const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
+        const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
+        const provider = {
+            1: ethProvider,
+            42161: arbProvider,
+        };
+        const resultCheck = await loadAllPools(provider);
+        return resultCheck;
+    }
+    catch {
+        return false;
+    }
 }
 

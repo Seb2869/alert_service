@@ -13,9 +13,11 @@ export const checkEvent = async (vault, provider, scan, lastBlocks, ethPrice) =>
     // const defBlock = chain===1? 17823116 : 117660826;
     const blockNumber = await vaultProvider.getBlockNumber();
     const lastBlock = lastBlocks[vaultId]?? blockNumber;
-    await getEvents(vaultId, lastBlock, blockNumber, vaultProvider, vaultScan, contractAddress, decimals, ethPrice);
-    const newRow = lastBlocks[vaultId]? false : true;
-    await writeLastBlock(vaultId, blockNumber, newRow);
+    const result = await getEvents(vaultId, lastBlock, blockNumber, vaultProvider, vaultScan, contractAddress, decimals, ethPrice);
+    if (result) {
+        const newRow = lastBlocks[vaultId]? false : true;
+        await writeLastBlock(vaultId, blockNumber, newRow)
+    };
 }
 
 export const loadAllEvent = async (provider, scan, last_blocks, ethPrice) => {
@@ -31,6 +33,7 @@ export const loadAllEvent = async (provider, scan, last_blocks, ethPrice) => {
     return result;
 
 }
+
 
 export const eventCheck = async () => {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
