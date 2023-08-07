@@ -161,3 +161,5 @@ cython_debug/
 .idea/
 node_modules/
 data/
+
+.DS_Store
