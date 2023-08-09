@@ -8,6 +8,7 @@ import {
 import { getPriceForContract } from "../../utils/price.js";
 
 
+
 export const getAuraApyLp = async (
     provider,
     BAL_REWARD_CONTRACT,
@@ -29,6 +30,9 @@ export const getAuraApyLp = async (
     const tokenContractABI = [
         `function totalSupply() external view returns (uint256)`,
     ]
+    const assetABI = [
+        `function getPoolId() external view returns (bytes32)`,
+    ]
 
     const price_AURA = prices['aura-finance'] ? prices['aura-finance']['usd'] : 0;
     const price_BAL = prices['balancer'] ? prices['balancer']['usd'] : 0;
@@ -46,9 +50,6 @@ export const getAuraApyLp = async (
 
     const lpAddress = ASSET ? ASSET : await balRewardContract.asset();
     const tvl = await getSupplyBalTVL(provider, BAL_REWARD_CONTRACT, lpAddress);
-
-    // const auraTvl = (await auraContract.totalSupply()).toString();
-
 
     const rewardBal = 100 * (parseFloat(rewardRate) * (86400 * 365) * price_BAL) / tvl;
 

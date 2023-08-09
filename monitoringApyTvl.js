@@ -6,6 +6,7 @@ import {
     threshold1,
     threshold2,
     calculateDeviationPercent,
+    getAndFormatDate,
 } from "./utils/utils.js";
 import { openDatabase, runQuery, closeDatabase } from "./utils/sqlite.js";
 import { getLastData, writeAlertTs, getAlertsTS } from "./utils/database.js";
@@ -15,14 +16,19 @@ import { strategiesTVL } from "./strategy_list/tvlStrategy.js";
 import { getPrice } from "./utils/price.js";
 
 const getApy = async (strategy, provider, prices) => {
-    const { strategy_id, method, params, chain } = strategy;
+    const { strategy_id, strategy_addr, vault_addr, method, params, chain } = strategy;
+    const network = chain === 1 ? 'ETH' : 'ARB';
     const stratProvider = provider[chain];
     const [apy, tvl] = await method(stratProvider, ...params, prices);
     return {
         strategy_id,
+        strategy_addr,
+        vault_addr,
+        network,
         apy,
         tvl,
-        timestamp: Math.floor(Date.now() / 1000)
+        timestamp: Math.floor(Date.now() / 1000),
+        created_at: getAndFormatDate()
     }
 }
 
@@ -76,7 +82,22 @@ const saveToDB = async (data, fn) => {
     }
 }
 
-const loadAPY = async (provider) => {
+
+const saveToPG = async (pgClient, data) => {
+    try {
+        const values = data.map(item =>
+            `('${item.strategy_addr}', '${item.vault_addr}', '${item.network}', ${item.apy}, '${item.created_at}')`
+        ).join(', ');
+        const queryText = `INSERT INTO strategies_apy (strategy_addr, vault_addr, network, apy, created_at ) VALUES ${values}`;
+        await pgClient.query(queryText);
+    } catch (error) {
+        console.error('Error in transaction:', error);
+    }
+
+}
+
+
+const loadAPY = async (provider, pgClient) => {
     const prices = await getPrice(['balancer',
         'aura-finance',
         'aura-bal',
@@ -98,6 +119,7 @@ const loadAPY = async (provider) => {
         const filteredData = data.filter(elem => elem != undefined);
         if (filteredData.length > 0) {
             result = await saveToDB(filteredData, insertApy);
+            await saveToPG(pgClient, filteredData);
         }
     }
     else {
@@ -124,36 +146,41 @@ const checkApyTvl = async (alertsTS) => {
     }));
 }
 
+const sendAlert = async (strategy_id, threshold, key, deviationPercentDaily, alertsTS, period, call) => {
+    const message = `Стратегия ${strategy_id}: превышен порог ${threshold}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за ${period} (-${deviationPercentDaily.toFixed(2)}%)`;
+        const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
+        const now = Math.floor(Date.now() / 1000);
+        const diff = now - lastAlertTS;
+        const timeDiff = call? (3600 * 3) : (3600 * 24);
+        if (diff > timeDiff) {
+            const newRow = lastAlertTS === 0 ? true : false;
+            await writeAlertTs(strategy_id, now, newRow);
+            console.log(message);
+            await sendMessageToDiscord(message);
+            if (call) {
+                await sendMessageToMessageBird(message);
+            }
+        }
+}
+
 
 const checkPercent = async (strategy, key, alertsTS) => {
     const { strategy_id, last_value, avg_value_daily, avg_value_7_days } = strategy;
 
     const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
     const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
-    if (deviationPercentDaily > threshold1) {
-        const message = `Стратегия ${strategy_id}: превышен порог ${threshold1}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за день (-${deviationPercentDaily.toFixed(2)}%)`;
-        const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
-        const now = Math.floor(Date.now() / 1000);
-        const diff = now - lastAlertTS;
-        if (diff > (3600 * 8)) {
-
-            const newRow = lastAlertTS === 0 ? true : false;
-            await writeAlertTs(strategy_id, now, newRow);
-             console.log(message);
-             await sendMessageToDiscord(message);
-        }
+    if (deviationPercentDaily > threshold1 && deviationPercentDaily < threshold2) {
+        await sendAlert(strategy_id, threshold1, key, deviationPercentDaily, alertsTS, 'день', false);
+    }
+    if (deviationPercent7Days > threshold1 && deviationPercent7Days < threshold2) {
+        await sendAlert(strategy_id, threshold1, key, deviationPercent7Days, alertsTS, 'неделю', false);
+        
+    }
+    if (deviationPercentDaily > threshold2) {
+        await sendAlert(strategy_id, threshold2, key, deviationPercentDaily, alertsTS, 'день', true);
     }
     if (deviationPercent7Days > threshold2) {
-        const message = `Стратегия ${strategy_id}: превышен порог ${threshold2}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за неделю (-${deviationPercentDaily.toFixed(2)}%)`;
-        const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
-        const now = Math.floor(Date.now() / 1000);
-        const diff = now - lastAlertTS;
-        if (diff > (3600 * 8)) {
-            const newRow = lastAlertTS === 0 ? true : false;
-            await writeAlertTs(strategy_id, now, newRow);
-            await sendMessageToMessageBird(message);
-            console.log(message);
-        }
+        await sendAlert(strategy_id, threshold2, key, deviationPercent7Days, alertsTS, 'неделю', true);
     }
 }
 
@@ -183,7 +210,7 @@ const loadTVL = async (provider) => {
 }
 
 
-export const apyLoadCheck = async () => {
+export const apyLoadCheck = async (pgClient) => {
     try {
         const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
         const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
@@ -191,7 +218,7 @@ export const apyLoadCheck = async () => {
             1: ethProvider,
             42161: arbProvider,
         };
-        const resultLoad = await loadAPY(provider);
+        const resultLoad = await loadAPY(provider, pgClient);
         const resultLoadTvl = await loadTVL(provider);
         const alertsTS = await getAlertsTS();
         const resultCheck = await checkApyTvl(alertsTS);

@@ -3,22 +3,24 @@ import { poolCheck } from "./monitoringPools.js";
 import { eventCheck } from "./monitoringVaults.js";
 import { openDatabase, closeDatabase } from "./utils/sqlite.js";
 import { dbName } from "./utils/utils.js";
+import { getPgPool } from "./utils/postgres.js";
 
-const execute = async (fn, interval) => {
+const execute = async (fn, params, interval) => {
     try {
-        const result = await fn();
+        const result = await fn(...params);
         if (!result) {
             throw new Error(`Data load failed`);
         }
     } catch (error) {
        // console.error(error);
     } finally {
-        setTimeout(() => execute(fn, interval), interval);
+        setTimeout(() => execute(fn, params, interval), interval);
     }
 }
 
 const interval1Hour = 3600000;
 const interval10Min = 600000;
+const interval5Min = 300000;
 const interval2Min = 120000;
 
 const db = openDatabase(dbName);
@@ -60,11 +62,14 @@ db.serialize(function() {
 closeDatabase(db);
 setTimeout(() => {}, 30000); 
 
+const pgClient = getPgPool();
+
+
 (async () => {
 
-    await execute(eventCheck, interval2Min);
-    await execute(poolCheck, interval10Min);
-    await execute(apyLoadCheck, interval1Hour);
+    await execute(eventCheck, [], interval2Min);
+    await execute(poolCheck, [], interval10Min);
+    await execute(apyLoadCheck, [pgClient], interval5Min);
 
 })();
 

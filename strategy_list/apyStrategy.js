@@ -51,21 +51,25 @@ const GMD_TOKEN = '0x4945970efeec98d393b4b979b9be265a3ae28a8b';
 
 export const strategies = [
     {
-
         strategy_id: 'AURA_WSTETHETH',
+        strategy_addr: '0x1CB7385AbAF068bD22af4A4D364dE6e583dfce4e',
+        vault_addr: '0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4',
         chain: 1,
         method: methods.getAuraApyLp,
         params: [AURA_WSTETHETH_BAL_REWARD, AURA_REWARD, null]
     },
     {
-
         strategy_id: 'AURA_RETHETH',
+        strategy_addr: '0x13e19efAC9C07D3F167B2e861bbfe1d3E68971CC',
+        vault_addr: '0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4',
         chain: 1,
         method: methods.getAuraApyLp,
         params: [AURA_RETHETH_BAL_REWARD, AURA_REWARD, null]
     },
     {
         strategy_id: 'AURA_AURAWETH',
+        strategy_addr: '0x589f347f67D55cfd0c053b6B569ada34Ac8a1e47',
+        vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getAuraApyLp,
         params: [AURA_AURAWETH_BAL_REWARD,
@@ -74,51 +78,59 @@ export const strategies = [
     },
     {
         strategy_id: 'AURA_BAL',
+        strategy_addr: '0xae60bf4746c9fc06041207da3ce471e2e375274c',
+        vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getAuraApyStaked,
         params: [AURA_BAL_REWARD, AURA_REWARD, AURA_BAL_TVL]
     },
 
     {
-
         strategy_id: 'CONVEX_FXS',
+        strategy_addr: '0x186C4d1CDDD405E15525DF03f21E3705B9d4F659',
+        vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getConvexApy,
         params: [booster, CONVEX_FXS, CONVEX_FXS_TVL, ['frax-share', 'convex-fxs']]
     },
     {
-
         strategy_id: 'CONVEX_CVX',
+        strategy_addr: '0xE60343a903F0a3122F73B5D2BB9E1bC9491dbf01',
+        vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getConvexApy,
         params: [booster, CONVEX_CVX, CONVEX_CVX_TVL, ['ethereum', 'curve-dao-token']]
     },
     {
-
         strategy_id: 'GMX_GMX',
+        strategy_addr: '0x8e84FA3F87C4965F91EF5b218891295515d62E85',
+        vault_addr: '0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98',
         chain: 42161,
         method: methods.getGmxApy,
         params: [GMX_GMX]
 
     },
     {
-        // сверено
         strategy_id: 'FRAX_SFRXETHETH',
+        strategy_addr: '0xcca81Ea593FEa25f45DCCF034bD12391a8f64BB3',
+        vault_addr: '0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4',
         chain: 1,
         method: methods.getFraxApy,
         params: [FRAX_SFRXETHETH]
     },
     {
-
         strategy_id: 'GMD_STAKING',
+        strategy_addr: '0xC9FDdB51E0EfFb94adbe13E1118Ec5530bb733B0',
+        vault_addr: '0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98',
         chain: 42161,
         method: methods.getGmdStakingApy,
         params: [GMD_STAKING, GMD_TOKEN]
 
     },
     {
-
         strategy_id: 'YEARN_YCRV',
+        strategy_addr: '0x4DDeD4525dE7a38AE9273634914194B46d21041a',
+        vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getYearnApy,
         params: [YEARN_YCRV]
@@ -126,6 +138,8 @@ export const strategies = [
     },
     {
         strategy_id: 'GAINS_GNS',
+        strategy_addr: '0x18b9430d9ab251f7C27b7F2E922d2b0AF7506526',
+        vault_addr: '0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98',
         chain: 42161,
         method: methods.getGnsApy,
         params: [GAINS_GNS, GNS_TVL]

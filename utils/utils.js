@@ -117,6 +117,21 @@ export const getCurveApy = async () => {
 }
 
 
+
 export const calculateDeviationPercent = (value1, value2) => {
-  return ((value2-value1) / value2) * 100;
+  return ((value2 - value1) / value2) * 100;
+}
+
+
+export const getAndFormatDate = () => {
+  const date = new Date(Date.now());
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // +1 потому что месяцы начинаются с 0
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
 }
