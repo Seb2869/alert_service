@@ -56,7 +56,7 @@ export const getEvents = async (
             let withdrawLinks = withdrawLogs.map(log => `<${scan}/tx/${log.transactionHash}>`).join('\n');
             let message = decimals===6 
             ? `\n${vault} vault:\nTotal withdrawals: ${ethers.formatUnits(totalWithdraw, decimals)} USDC.\nTVL: ${tvlUsd.toFixed(2)} USDC.\nTransactions:\n${withdrawLinks}`
-            : `\n${vault} vault:\nTotal withdrawals: ${ethers.formatUnits(totalWithdraw, decimals)} ETH (${(etherPrice * parseFloat(ethers.formatUnits(totalWithdraw, decimals))).toFixed(2)}$).\nTVL: ${tvl.toFixed(2)} ETH (${tvlUsd.toFixed(2)}$).\nTransactions:\n${depositLinks}`
+            : `\n${vault} vault:\nTotal withdrawals: ${ethers.formatUnits(totalWithdraw, decimals)} ETH (${(etherPrice * parseFloat(ethers.formatUnits(totalWithdraw, decimals))).toFixed(2)}$).\nTVL: ${tvl.toFixed(2)} ETH (${tvlUsd.toFixed(2)}$).\nTransactions:\n${withdrawLinks}`
             
             await sendTxMessage(message, 'Withdraw');
             console.log(message);
