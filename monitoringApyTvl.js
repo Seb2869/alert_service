@@ -146,21 +146,23 @@ const checkApyTvl = async (alertsTS) => {
     }));
 }
 
-const sendAlert = async (strategy_id, threshold, key, deviationPercentDaily, alertsTS, period, call) => {
-    const message = `Стратегия ${strategy_id}: превышен порог ${threshold}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за ${period} (-${deviationPercentDaily.toFixed(2)}%)`;
-        const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
-        const now = Math.floor(Date.now() / 1000);
-        const diff = now - lastAlertTS;
-        const timeDiff = call? (3600 * 3) : (3600 * 24);
-        if (diff > timeDiff) {
-            const newRow = lastAlertTS === 0 ? true : false;
-            await writeAlertTs(strategy_id, now, newRow);
-            console.log(message);
-            await sendMessageToDiscord(message);
-            if (call) {
-                await sendMessageToMessageBird(message);
-            }
+const sendAlert = async (strategy_id, threshold, key, currValue, avgValue, alertsTS, period, call) => {
+    const messageApy = `Стратегия ${strategy_id}: превышен порог ${threshold}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за ${period}. Текущее значение: ${currValue.toFixed(2)}% (Среднее значение ${avgValue.toFixed(2)}%)`;
+    const messageTvl = `Среднее значение total staked ${strategy_id} за ${period} снизилось более, чем на ${threshold}%. Текущий totalSupply LP: ${currValue.toFixed(2)}. Среднее значение: ${avgValue.toFixed(2)}`;
+    const message = key.toUpperCase()==="TVL"? messageTvl : messageApy;
+    const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
+    const now = Math.floor(Date.now() / 1000);
+    const diff = now - lastAlertTS;
+    const timeDiff = call ? (3600 * 3) : (3600 * 24);
+    if (diff > timeDiff) {
+        const newRow = lastAlertTS === 0 ? true : false;
+        await writeAlertTs(strategy_id, now, newRow);
+        console.log(message);
+        await sendMessageToDiscord(message);
+        if (call) {
+            await sendMessageToMessageBird(message);
         }
+    }
 }
 
 
@@ -170,17 +172,16 @@ const checkPercent = async (strategy, key, alertsTS) => {
     const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
     const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
     if (deviationPercentDaily > threshold1 && deviationPercentDaily < threshold2) {
-        await sendAlert(strategy_id, threshold1, key, deviationPercentDaily, alertsTS, 'день', false);
+        await sendAlert(strategy_id, threshold1, key, last_value, avg_value_daily, alertsTS, 'день', false);
     }
     if (deviationPercent7Days > threshold1 && deviationPercent7Days < threshold2) {
-        await sendAlert(strategy_id, threshold1, key, deviationPercent7Days, alertsTS, 'неделю', false);
-        
+        await sendAlert(strategy_id, threshold1, key, last_value, avg_value_7_days, alertsTS, 'неделю', false);
     }
     if (deviationPercentDaily > threshold2) {
-        await sendAlert(strategy_id, threshold2, key, deviationPercentDaily, alertsTS, 'день', true);
+        await sendAlert(strategy_id, threshold2, key, last_value, avg_value_daily, alertsTS, 'день', true);
     }
     if (deviationPercent7Days > threshold2) {
-        await sendAlert(strategy_id, threshold2, key, deviationPercent7Days, alertsTS, 'неделю', true);
+        await sendAlert(strategy_id, threshold2, key, last_value, avg_value_7_days, alertsTS, 'неделю', true);
     }
 }
 
