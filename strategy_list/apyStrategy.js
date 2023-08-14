@@ -87,7 +87,7 @@ export const strategies = [
 
     {
         strategy_id: 'CONVEX_FXS',
-        strategy_addr: '0x186C4d1CDDD405E15525DF03f21E3705B9d4F659',
+        strategy_addr: '0x18b9430d9ab251f7C27b7F2E922d2b0AF7506526',//'0x186C4d1CDDD405E15525DF03f21E3705B9d4F659',
         vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getConvexApy,
@@ -95,7 +95,7 @@ export const strategies = [
     },
     {
         strategy_id: 'CONVEX_CVX',
-        strategy_addr: '0xE60343a903F0a3122F73B5D2BB9E1bC9491dbf01',
+        strategy_addr: '0x10e17b5aDbccb8B8E9657Fb1Fa5a688f58D88850', // '0xE60343a903F0a3122F73B5D2BB9E1bC9491dbf01',
         vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getConvexApy,
@@ -129,7 +129,7 @@ export const strategies = [
     },
     {
         strategy_id: 'YEARN_YCRV',
-        strategy_addr: '0x4DDeD4525dE7a38AE9273634914194B46d21041a',
+        strategy_addr: '0x3E5e9B5E4C08f1d0E7d5a75204edcd57e44ee2cf',//'0x4DDeD4525dE7a38AE9273634914194B46d21041a',
         vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getYearnApy,
@@ -145,4 +145,14 @@ export const strategies = [
         params: [GAINS_GNS, GNS_TVL]
 
     },
+   /*  {
+        strategy_id: 'JOE',
+        strategy_addr: '0xe5E7e9CE13e398C4087a35982D80eb93105082B4',
+        vault_addr: '0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98',
+        chain: 42161,
+        method: undefined,//methods.getGnsApy,
+        params: []
+
+    },
+ */
 ]

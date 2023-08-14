@@ -6,14 +6,14 @@ const poolAbi = [
 ]
 
 
-export const getAuraPoolBalance = async (provider, contractAddress, threshold, poolId, tokens, price) => {
+export const getAuraPoolBalance = async (provider, contractAddress, threshold, decimals = [18, 18], tokens,  poolId, price) => {
     const contract = new ethers.Contract(contractAddress, poolAbi, provider);
 
     const balance0Raw = await contract.getPoolTokenInfo(poolId, tokens[0]);
-    const balance0 = parseFloat(ethers.formatEther(balance0Raw[0]));
+    const balance0 = parseFloat(ethers.formatUnits(balance0Raw[0], decimals[0]));
     
     const balance1Raw = await contract.getPoolTokenInfo(poolId, tokens[1]);
-    const balance1 = parseFloat(ethers.formatEther(balance1Raw[0]));
+    const balance1 = parseFloat(ethers.formatUnits(balance1Raw[0], decimals[1]));
 
     const balanceUsd0 = (price && price[0])? balance0 * price[0] : balance0;
     const balanceUsd1 = (price && price[1])? balance1 * price[1] : balance1;

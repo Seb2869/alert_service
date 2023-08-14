@@ -7,16 +7,21 @@ import { sendMessageToDiscord } from "./utils/alert.js";
 
 const checkBalance = async (pool, provider, alertsTS) => {
     try {
-        const { poolId, chain, contractAddress, method, threshold, params, needPrice, message } = pool;
+        const { poolId, chain, contractAddress, method, threshold, params, needPrice, message, decimals } = pool;
         const stratProvider = provider[chain];
         if (needPrice) {
-            const [poolId, tokens] = params;
-            const price0 = await getPriceForDefiLama(tokens[0]);
-            const price1 = await getPriceForDefiLama(tokens[1]);
-            const price = [price0, price1];
+            const tokens = params[0];
+            const price = [];
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenAddress = tokens[i].toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+                    ? '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+                    : tokens[i]
+                const priceToken = await getPriceForDefiLama(tokenAddress);
+                price.push(priceToken)
+            }
             params.push(price);
         }
-        const resultArr = await method(stratProvider, contractAddress, threshold, ...params);
+        const resultArr = await method(stratProvider, contractAddress, threshold, decimals, ...params);
         const [result, percent] = resultArr;
         let replacedString = message.replace("{threshold}", threshold);
 
@@ -40,7 +45,8 @@ const checkBalance = async (pool, provider, alertsTS) => {
         }
         return true
     }
-    catch {
+    catch (error) {
+        console.log(error);
         return false
     }
 }
