@@ -147,7 +147,7 @@ export const strategies = [
     },
    /*  {
         strategy_id: 'JOE',
-        strategy_addr: '0xe5E7e9CE13e398C4087a35982D80eb93105082B4',
+        strategy_addr: '0xcA16676Ba8512688884195B611aE1C00Ff2F3183',
         vault_addr: '0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98',
         chain: 42161,
         method: undefined,//methods.getGnsApy,
