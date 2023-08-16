@@ -55,16 +55,14 @@ const joeBalanceAbi = [
 
 
 export const strategiesTVL = [
-    {
-
+   /*  {
         strategy_id: 'AURA_WSTETHETH',
         chain: 1,
         contractAddress: AURA_WSTETHETH_TVL, 
         abi: totalSupplyAbi,
         method: 'totalSupply',
-    },
+    }, */
     {
-
         strategy_id: 'AURA_RETHETH',
         chain: 1,
         contractAddress: AURA_RETHETH_TVL, 

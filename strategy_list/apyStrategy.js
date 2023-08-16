@@ -50,14 +50,14 @@ const GMD_TOKEN = '0x4945970efeec98d393b4b979b9be265a3ae28a8b';
 
 
 export const strategies = [
-    {
+    /* {
         strategy_id: 'AURA_WSTETHETH',
         strategy_addr: '0x1CB7385AbAF068bD22af4A4D364dE6e583dfce4e',
         vault_addr: '0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4',
         chain: 1,
         method: methods.getAuraApyLp,
         params: [AURA_WSTETHETH_BAL_REWARD, AURA_REWARD, null]
-    },
+    }, */
     {
         strategy_id: 'AURA_RETHETH',
         strategy_addr: '0x13e19efAC9C07D3F167B2e861bbfe1d3E68971CC',
