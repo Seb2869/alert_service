@@ -1,35 +1,34 @@
-import { dbName } from "./utils.js";
-import { openDatabase, runQuery, closeDatabase, getRows } from "./sqlite.js";
+import { queryDataFromPG } from "./postgres.js";
 
 const buildQuery = (value, table, date1, date2) => {
     const query = `SELECT
                         strategy_id,
-                        (SELECT ${value} FROM ${table} AS as2 WHERE as2.strategy_id = ${table}.strategy_id ORDER BY "timestamp" DESC LIMIT 1) AS last_value,
+                        (SELECT ${value} FROM alerts_${table} AS as2 WHERE as2.strategy_id = alerts_${table}.strategy_id ORDER BY "timestamp" DESC LIMIT 1) AS last_value,
                         AVG(CASE WHEN timestamp >= ${date1} THEN ${value} END) AS avg_value_daily,
                         AVG(CASE WHEN timestamp >= ${date2} THEN ${value} END) AS avg_value_7_days
-                        FROM ${table}
+                        FROM alerts_${table}
                         GROUP BY strategy_id;`;
     return query
 }
 
-const executeQuery = async (db, date1, date2, value, table) => {
+
+const executeQuery = async (pgClient, date1, date2, value, table) => {
     const query = buildQuery(value, table, date1, date2);
-    const rows = await getRows(db, query);
+    const dataset = await queryDataFromPG(query, pgClient);
     const result = {};
-    result[value] = rows;
+    result[value] = dataset;
     return result;
 };
 
-export const getLastData = async (date1, date2) => {
+export const getLastData = async (pgClient, date1, date2) => {
     let result = [];
-    const db = openDatabase(dbName);
     try {
         const data = [
             ['apy', 'apy_stats'],
             ['tvl', 'tvl_stats'],
         ];
         result = await Promise.all(data.map((row) => {
-            return executeQuery(db, date1, date2, ...row)
+            return executeQuery(pgClient, date1, date2, ...row)
         }))
 
     } catch (err) {
@@ -37,76 +36,88 @@ export const getLastData = async (date1, date2) => {
         throw err;
     }
     finally {
-        closeDatabase(db);
         return result;
     }
 
 }
 
-export const getAlertsTS = async () => {
-    const db = openDatabase(dbName);
+export const getAlertsTS = async (pgClient) => {
     const alertsDictionary = {};
+
     try {
-        const query = `SELECT strategy_id, alert_ts FROM alerts`;
-        const rows = await getRows(db, query);
+        const query = `SELECT strategy_id, atype, alert_ts FROM alerts_ts`;
+        const rows = await queryDataFromPG(query, pgClient);
+        
         for (const row of rows) {
-            alertsDictionary[row.strategy_id] = row.alert_ts;
+            if (!alertsDictionary[row.strategy_id]) {
+                alertsDictionary[row.strategy_id] = {};
+            }
+            
+            alertsDictionary[row.strategy_id][row.atype] = row.alert_ts;
         }
     } catch (err) {
         console.error('Error fetching alerts:', err.message);
         throw err;
-    }
-    finally {
-        closeDatabase(db);
+    } finally {
         return alertsDictionary;
     }
 };
 
 
-export const getLastBlock = async () => {
-    const db = openDatabase(dbName);
+export const getLastBlock = async (pgClient) => {
+    
     const lastBlockDictionary = {};
     try {
-        const query = `SELECT vault, last_block FROM last_blocks`;
-        const rows = await getRows(db, query);
+        const query = `SELECT vault, last_block FROM alerts_last_blocks`;
+        const rows = await queryDataFromPG(query, pgClient);
         for (const row of rows) {
             lastBlockDictionary[row.vault] = row.last_block;
         }
     } catch (err) {
-        // console.error('Error fetching alerts:', err.message);
-        throw err;
+        console.error('Error fetching alerts:', err.message);
+       //  throw err;
     }
     finally {
-        closeDatabase(db);
         return lastBlockDictionary;
     }
 };
 
-export const writeLastBlock = async (vault, lastBlock, newRow) => {
-    const db = openDatabase(dbName);
+
+export const writeLastBlock = async (pgClient, vault, lastBlock, newRow) => {
     try {
-        const query = newRow
+        const queryText = newRow
             ?
-            `INSERT INTO last_blocks (last_block, vault) VALUES (?, ?)`
+            `INSERT INTO alerts_last_blocks (last_block, vault) VALUES (${lastBlock}, '${vault}')`
             :
-            `UPDATE last_blocks SET last_block = ? WHERE vault = ?`
+            `UPDATE alerts_last_blocks SET last_block = ${lastBlock} WHERE vault = '${vault}'`
             ;
-        await runQuery(
-            db,
-            query,
-            [lastBlock, vault]
-        );
+        await pgClient.query(queryText);
     } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
         return false;
     }
-    finally {
-        closeDatabase(db);
+};
+
+export const writeAlertTs = async (pgClient, strategy_id, type, newTS, newRow) => {
+    try {
+        const queryText = newRow
+            ?
+            `INSERT INTO alerts_ts (alert_ts, atype, strategy_id) VALUES (${newTS}, '${type}', '${strategy_id}')`
+            :
+            `UPDATE alerts_ts SET alert_ts = ${newTS} WHERE strategy_id = '${strategy_id}' and atype = '${type}'`
+            ;
+        await pgClient.query(queryText);
+    
+    } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+        return false;
     }
 };
 
 
-export const getThreshold = async () => {
+
+
+/* export const getThreshold = async () => {
     const db = openDatabase(dbName);
     const thresholdDictionary = {};
     try {
@@ -120,34 +131,10 @@ export const getThreshold = async () => {
         throw err;
     }
     finally {
-        closeDatabase(db);
         return thresholdDictionary;
     }
-};
+}; */
 
-
-export const writeAlertTs = async (strategy_id, newTS, newRow) => {
-    const db = openDatabase(dbName);
-    try {
-        const query = newRow
-            ?
-            `INSERT INTO alerts (alert_ts, strategy_id) VALUES (?, ?)`
-            :
-            `UPDATE alerts SET alert_ts = ? WHERE strategy_id = ?`
-            ;
-        await runQuery(
-            db,
-            query,
-            [newTS, strategy_id]
-        );
-    } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
-        return false;
-    }
-    finally {
-        closeDatabase(db);
-    }
-};
 
 
 

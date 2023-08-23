@@ -1,8 +1,6 @@
 import { apyLoadCheck } from "./monitoringApyTvl.js";
 import { poolCheck } from "./monitoringPools.js";
 import { eventCheck } from "./monitoringVaults.js";
-import { openDatabase, closeDatabase } from "./utils/sqlite.js";
-import { dbName } from "./utils/utils.js";
 import { getPgPool } from "./utils/postgres.js";
 
 const execute = async (fn, params, interval) => {
@@ -23,43 +21,6 @@ const interval10Min = 600000;
 const interval5Min = 300000;
 const interval2Min = 120000;
 
-const db = openDatabase(dbName);
-
-db.serialize(function() {
-
-  db.run(`CREATE TABLE IF NOT EXISTS alerts (
-    strategy_id TEXT,
-    alert_ts INTEGER
-  );`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS "apy_stats" (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    strategy_id TEXT,
-    tvl NUMERIC,
-    apy NUMERIC,
-    "timestamp" INTEGER
-  );`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS "last_blocks" (
-    "vault" TEXT,
-    last_block INTEGER
-  );`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS thresholds (
-    strategy_id TEXT,
-    threshold INTEGER
-  );`);
-
-  db.run(`CREATE TABLE IF NOT EXISTS "tvl_stats" (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    strategy_id TEXT,
-    tvl NUMERIC,
-    "timestamp" INTEGER
-  );`);
-
-});
-
-closeDatabase(db);
 setTimeout(() => {}, 30000); 
 
 const pgClient = getPgPool();
@@ -67,8 +28,8 @@ const pgClient = getPgPool();
 
 (async () => {
 
-    await execute(eventCheck, [], interval2Min);
-    await execute(poolCheck, [], interval10Min);
+    await execute(eventCheck, [pgClient], interval2Min);
+    await execute(poolCheck, [pgClient], interval10Min);
     await execute(apyLoadCheck, [pgClient], interval5Min);
 
 })();

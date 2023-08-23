@@ -28,6 +28,16 @@ export const getPgPool = () => {
   }
 };
 
+export const queryDataFromPG = async (query_str, client) => {
+  try {
+    const result = await client.query(query_str);
+    const dataset = result.rows || [];
+    return dataset;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
 
 
 

@@ -2,13 +2,11 @@ import { ethers } from "ethers";
 import {
     ETH_NODE,
     ARB_NODE,
-    dbName,
     threshold1,
     threshold2,
     calculateDeviationPercent,
     getAndFormatDate,
 } from "./utils/utils.js";
-import { openDatabase, runQuery, closeDatabase } from "./utils/sqlite.js";
 import { getLastData, writeAlertTs, getAlertsTS } from "./utils/database.js";
 import { sendMessageToDiscord, sendMessageToMessageBird } from "./utils/alert.js";
 import { strategies } from "./strategy_list/apyStrategy.js";
@@ -32,39 +30,9 @@ const getApy = async (strategy, provider, prices) => {
     }
 }
 
-const insertTvl = async (record, db) => {
-    const { strategy_id, tvl, timestamp } = record;
-    const insertResult = await runQuery(
-        db,
-        `INSERT INTO tvl_stats (strategy_id, tvl, timestamp) VALUES (?, ?, ?)`,
-        [strategy_id, tvl, timestamp]
-    );
-    if (!('lastID' in insertResult)) {
-        return false
-    }
-    else {
-        return true
-    }
-}
 
-const insertApy = async (record, db) => {
-    const { strategy_id, tvl, apy, timestamp } = record;
-    const insertResult = await runQuery(
-        db,
-        `INSERT INTO apy_stats (strategy_id, tvl, apy, timestamp) VALUES (?, ?, ?, ?)`,
-        [strategy_id, tvl, apy, timestamp]
-    );
-    if (!('lastID' in insertResult)) {
-        return false
-    }
-    else {
-        return true
-    }
-
-}
 
 const saveToDB = async (data, fn) => {
-    const db = openDatabase(dbName);
     let result = true;
     try {
         for (const record of data) {
@@ -77,11 +45,36 @@ const saveToDB = async (data, fn) => {
         result = false;
     }
     finally {
-        closeDatabase(db);
         return result;
     }
 }
 
+
+const saveApyStatsToPG = async (pgClient,  data) => {
+    try {
+        const values = data.map(item =>
+            `('${item.strategy_id}', ${item.tvl}, ${item.apy}, ${item.timestamp})`
+        ).join(', ');
+        const queryText = `INSERT INTO alerts_apy_stats (strategy_id, tvl, apy, timestamp) VALUES ${values}`;
+        await pgClient.query(queryText);
+    } catch (error) {
+        console.error('Error in transaction:', error);
+    }
+
+}
+
+const saveTvlStatsToPG = async (pgClient,  data) => {
+    try {
+        const values = data.map(item =>
+            `('${item.strategy_id}', ${item.tvl}, ${item.timestamp})`
+        ).join(', ');
+        const queryText = `INSERT INTO alerts_tvl_stats (strategy_id, tvl, timestamp) VALUES ${values}`;
+        await pgClient.query(queryText);
+    } catch (error) {
+        console.error('Error in transaction:', error);
+    }
+
+}
 
 const saveToPG = async (pgClient, data) => {
     try {
@@ -118,8 +111,10 @@ const loadAPY = async (provider, pgClient) => {
         const data = await Promise.all(strategies.map(strategy => getApy(strategy, provider, prices)));
         const filteredData = data.filter(elem => elem != undefined);
         if (filteredData.length > 0) {
-            result = await saveToDB(filteredData, insertApy);
-            await saveToPG(pgClient, filteredData);
+            result = await saveApyStatsToPG(pgClient, filteredData);
+
+            //  console.log(filteredData);
+           // await saveToPG(pgClient, filteredData);
         }
     }
     else {
@@ -130,56 +125,58 @@ const loadAPY = async (provider, pgClient) => {
 }
 
 
-const checkApyTvl = async (alertsTS) => {
+const checkApyTvl = async (pgClient, alertsTS) => {
     const oneDay = 24 * 60 * 60;
     const oneWeek = 7 * oneDay;
     const now = Math.floor(Date.now() / 1000);
     const dateDayAgo = now - oneDay;
     const date7DayAgo = now - oneWeek;
-    const lastData = await getLastData(dateDayAgo, date7DayAgo);
+    const lastData = await getLastData(pgClient, dateDayAgo, date7DayAgo);
     await Promise.all(lastData.map(async (data) => {
         Object.entries(data).forEach(([key, valueArray]) => {
             valueArray.map(async row => {
-                return await checkPercent(row, key, alertsTS)
+                return await checkPercent(pgClient, row, key, alertsTS)
             })
         });
     }));
 }
 
-const sendAlert = async (strategy_id, threshold, key, currValue, avgValue, alertsTS, period, call) => {
+const sendAlert = async (pgClient, strategy_id, threshold, key, currValue, avgValue, alertsTS, period, call) => {
     const messageApy = `Стратегия ${strategy_id}: превышен порог ${threshold}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за ${period}. Текущее значение: ${currValue.toFixed(2)}% (Среднее значение ${avgValue.toFixed(2)}%)`;
     const messageTvl = `Среднее значение total staked ${strategy_id} за ${period} снизилось более, чем на ${threshold}%. Текущий totalSupply LP: ${currValue.toFixed(2)}. Среднее значение: ${avgValue.toFixed(2)}`;
     const message = key.toUpperCase()==="TVL"? messageTvl : messageApy;
-    const lastAlertTS = alertsTS[strategy_id] ? alertsTS[strategy_id] : 0;
+    const lastAlertTS = alertsTS[strategy_id][key] ? alertsTS[strategy_id][key] : 0;
     const now = Math.floor(Date.now() / 1000);
     const diff = now - lastAlertTS;
-    const timeDiff = call ? (3600 * 3) : (3600 * 24);
+    const timeDiff = (3600 * 12);
     if (diff > timeDiff) {
         const newRow = lastAlertTS === 0 ? true : false;
-        await writeAlertTs(strategy_id, now, newRow);
+        await writeAlertTs(pgClient, strategy_id, key, now, newRow);
         console.log(message);
         await sendMessageToDiscord(message);
         if (call) {
-            await sendMessageToMessageBird(message);
+           await sendMessageToMessageBird(message);
         }
     }
 }
 
 
-const checkPercent = async (strategy, key, alertsTS) => {
+const checkPercent = async (pgClient, strategy, key, alertsTS) => {
     const { strategy_id, last_value, avg_value_daily, avg_value_7_days } = strategy;
 
     const deviationPercentDaily = calculateDeviationPercent(last_value, avg_value_daily);
     const deviationPercent7Days = calculateDeviationPercent(last_value, avg_value_7_days);
     if (deviationPercentDaily > threshold1 && deviationPercentDaily < threshold2) {
-        await sendAlert(strategy_id, threshold1, key, last_value, avg_value_daily, alertsTS, 'день', false);
+        await sendAlert(pgClient, strategy_id, threshold1, key, last_value, avg_value_daily, alertsTS, 'день', false);
     }
+    else 
     if (deviationPercent7Days > threshold1 && deviationPercent7Days < threshold2) {
-        await sendAlert(strategy_id, threshold1, key, last_value, avg_value_7_days, alertsTS, 'неделю', false);
+        await sendAlert(pgClient, strategy_id, threshold1, key, last_value, avg_value_7_days, alertsTS, 'неделю', false);
     }
     if (deviationPercentDaily > threshold2) {
         await sendAlert(strategy_id, threshold2, key, last_value, avg_value_daily, alertsTS, 'день', true);
     }
+    else
     if (deviationPercent7Days > threshold2) {
         await sendAlert(strategy_id, threshold2, key, last_value, avg_value_7_days, alertsTS, 'неделю', true);
     }
@@ -200,12 +197,12 @@ const getTvl = async (strategy, provider) => {
     return { strategy_id, tvl, timestamp: Math.floor(Date.now() / 1000) };
 }
 
-const loadTVL = async (provider) => {
+const loadTVL = async (provider, pgClient) => {
     let result = false;
     const data = await Promise.all(strategiesTVL.map(strategy => getTvl(strategy, provider)));
     const filteredData = data.filter(elem => elem != undefined);
     if (filteredData.length > 0) {
-        result = await saveToDB(filteredData, insertTvl);
+        result = await saveTvlStatsToPG(pgClient, filteredData);
     }
     return result;
 }
@@ -220,9 +217,9 @@ export const apyLoadCheck = async (pgClient) => {
             42161: arbProvider,
         };
         const resultLoad = await loadAPY(provider, pgClient);
-        const resultLoadTvl = await loadTVL(provider);
-        const alertsTS = await getAlertsTS();
-        const resultCheck = await checkApyTvl(alertsTS);
+        const resultLoadTvl = await loadTVL(provider, pgClient);
+        const alertsTS = await getAlertsTS(pgClient);
+        const resultCheck = await checkApyTvl(pgClient, alertsTS);
         return resultLoad;
     }
     catch (error) {

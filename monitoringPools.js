@@ -5,7 +5,7 @@ import { pools } from "./strategy_list/pools.js";
 import { getPriceForDefiLama } from "./utils/price.js";
 import { sendMessageToDiscord } from "./utils/alert.js";
 
-const checkBalance = async (pool, provider, alertsTS) => {
+const checkBalance = async (pool, provider, pgClient, alertsTS) => {
     try {
         const { poolId, chain, contractAddress, method, threshold, params, needPrice, message, decimals } = pool;
         const stratProvider = provider[chain];
@@ -30,17 +30,17 @@ const checkBalance = async (pool, provider, alertsTS) => {
         }
         if (result) {
             const now = Math.floor(Date.now() / 1000);
-            const lastAlertTS = alertsTS[poolId] ? alertsTS[poolId] : 0;
+            const lastAlertTS = alertsTS[poolId]? alertsTS[poolId]['pool'] : 0;
             const diff = now - lastAlertTS;
             if (diff > (3600 * 24)) {
                 const newRow = lastAlertTS === 0 ? true : false;
-                await writeAlertTs(poolId, now, newRow);
+                await writeAlertTs(pgClient, poolId, 'pool', now, newRow);
                 let replacedString = message.replace("{threshold}", threshold);
                 if (replacedString.includes("{percent}")) {
                     replacedString = replacedString.replace("{percent}", percent[0].toFixed(2));
                 }
                 await sendMessageToDiscord(replacedString);
-                console.log(replacedString);
+                // console.log(replacedString);
             }
         }
         return true
@@ -51,13 +51,13 @@ const checkBalance = async (pool, provider, alertsTS) => {
     }
 }
 
-const loadAllPools = async (provider) => {
+const loadAllPools = async (provider, pgClient) => {
     try {
-        const alertsTS = await getAlertsTS();
+        const alertsTS = await getAlertsTS(pgClient);
         let result = false;
         const filterPools = pools.filter(pool => pool.status);
         if (filterPools?.length) {
-            const data = await Promise.all(filterPools.map(pool => checkBalance(pool, provider, alertsTS)));
+            const data = await Promise.all(filterPools.map(pool => checkBalance(pool, provider,pgClient, alertsTS)));
             result = data.reduce((acc, value) => acc && value, true);
         }
         else {
@@ -72,7 +72,7 @@ const loadAllPools = async (provider) => {
     }
 }
 
-export const poolCheck = async () => {
+export const poolCheck = async (pgClient) => {
     try {
         const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
         const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
@@ -80,7 +80,7 @@ export const poolCheck = async () => {
             1: ethProvider,
             42161: arbProvider,
         };
-        const resultCheck = await loadAllPools(provider);
+        const resultCheck = await loadAllPools(provider, pgClient);
         return resultCheck;
     }
     catch {

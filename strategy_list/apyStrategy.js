@@ -9,6 +9,7 @@ const AURA_WSTETHETH_BAL_REWARD = '0x59d66c58e83a26d6a0e35114323f65c3945c89c1';
 // AURA_RETHETH
 const AURA_RETHETH_BAL_REWARD = '0xdd1fe5ad401d4777ce89959b7fa587e569bf125d';
 const AURA_RETHETH_TVL = '0x1e19cf2d73a72ef1332c882f20534b6519be0276';
+const TVL_109 = '0x9497df26e5bD669Cb925eC68E730492b9300c482';
 
 // AURA_BAL
 const AURA_BAL_REWARD = '0x00A7BA8Ae7bca0B10A32Ea1f8e2a1Da980c6CAd2';
@@ -17,6 +18,11 @@ const AURA_BAL_TVL = '0xfaa2ed111b4f580fcb85c48e6dc6782dc5fcd7a6';
 // AURA_AURAWETH
 const AURA_AURAWETH_BAL_REWARD = '0x1204f5060be8b716f5a62b4df4ce32acd01a69f5';
 const ASSET = '0xcfca23ca9ca720b6e98e3eb9b6aa0ffc4a5c08b9';
+const TVL_100 = '0x0665BC4e218CaA5A3b2Ca839EEf9B8F342cd5C58';
+
+// AURA_TRI_POOL
+const AURA_TRI_POOL_BAL_REWARD = '0x032b676d5d55e8ecbae88ebee0aa10fb5f72f6cb';
+const TVL_139 = '0xe1faC5eCe66E6bb5CC9e6869343023599D142a6E';
 
 // FRAX_SFRXETHETH
 const FRAX_SFRXETHETH = '0xac3e018457b222d93114458476f3e3416abbe38f';
@@ -58,13 +64,13 @@ export const strategies = [
         method: methods.getAuraApyLp,
         params: [AURA_WSTETHETH_BAL_REWARD, AURA_REWARD, null]
     }, */
-    {
+     {
         strategy_id: 'AURA_RETHETH',
         strategy_addr: '0x13e19efAC9C07D3F167B2e861bbfe1d3E68971CC',
         vault_addr: '0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4',
         chain: 1,
         method: methods.getAuraApyLp,
-        params: [AURA_RETHETH_BAL_REWARD, AURA_REWARD, null]
+        params: [AURA_RETHETH_BAL_REWARD, AURA_REWARD, TVL_109, null, '109']
     },
     {
         strategy_id: 'AURA_AURAWETH',
@@ -73,8 +79,16 @@ export const strategies = [
         chain: 1,
         method: methods.getAuraApyLp,
         params: [AURA_AURAWETH_BAL_REWARD,
-            AURA_REWARD, ASSET]
+            AURA_REWARD, TVL_100, ASSET, '100']
 
+    }, 
+    {
+        strategy_id: 'AURA_TRI_POOL',
+        strategy_addr: '0x3832189aBf3f9796dF1Cb9916971C9C03869F3c3',
+        vault_addr: '0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4', 
+        chain: 1,
+        method: methods.getAuraApyLp,
+        params: [AURA_TRI_POOL_BAL_REWARD, AURA_REWARD, TVL_139, null, '139']
     },
     {
         strategy_id: 'AURA_BAL',
@@ -82,17 +96,18 @@ export const strategies = [
         vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getAuraApyStaked,
-        params: [AURA_BAL_REWARD, AURA_REWARD, AURA_BAL_TVL]
+        params: [AURA_BAL_REWARD, AURA_REWARD, AURA_BAL_TVL, 'auraBal']
     },
+    
 
-    {
+    /* {
         strategy_id: 'CONVEX_FXS',
         strategy_addr: '0x18b9430d9ab251f7C27b7F2E922d2b0AF7506526',//'0x186C4d1CDDD405E15525DF03f21E3705B9d4F659',
         vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getConvexApy,
         params: [booster, CONVEX_FXS, CONVEX_FXS_TVL, ['frax-share', 'convex-fxs']]
-    },
+    }, */
     {
         strategy_id: 'CONVEX_CVX',
         strategy_addr: '0x10e17b5aDbccb8B8E9657Fb1Fa5a688f58D88850', // '0xE60343a903F0a3122F73B5D2BB9E1bC9491dbf01',
@@ -144,7 +159,7 @@ export const strategies = [
         method: methods.getGnsApy,
         params: [GAINS_GNS, GNS_TVL]
 
-    },
+    }, 
    /*  {
         strategy_id: 'JOE',
         strategy_addr: '0xcA16676Ba8512688884195B611aE1C00Ff2F3183',
