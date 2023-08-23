@@ -153,7 +153,7 @@ export const pools = [
         chain: 1,
         contractAddress: POOL_CURVE_FRAX_USDC, 
         method: methods.getCurvePoolBalance,
-        threshold: 80,
+        threshold: 90,
         params: [],
         needPrice: false,
         decimals: [18, 6],
