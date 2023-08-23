@@ -114,7 +114,7 @@ const loadAPY = async (provider, pgClient) => {
             result = await saveApyStatsToPG(pgClient, filteredData);
 
             //  console.log(filteredData);
-           // await saveToPG(pgClient, filteredData);
+           await saveToPG(pgClient, filteredData);
         }
     }
     else {
