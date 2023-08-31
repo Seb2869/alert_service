@@ -32,7 +32,7 @@ const pgClient = getPgPool();
     await execute(eventCheck, [pgClient], interval2Min);
     await execute(poolCheck, [pgClient], interval10Min);
     await execute(apyLoadCheck, [pgClient], interval5Min);
-    await execute(piCheck, [], interval10Min);
+    // await execute(piCheck, [], interval10Min);
 
 
 })();
