@@ -156,16 +156,14 @@ const sendAlert = async (
   period,
   call
 ) => {
+    try {
   if (currValue && currValue > 0) {
-    const messageApy = `Стратегия ${strategy_id}: превышен порог ${threshold}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за ${period}. Текущее значение: ${currValue.toFixed(
-      2
-    )}% (Среднее значение ${avgValue.toFixed(2)}%)`
-    const messageTvl = `Среднее значение total staked ${strategy_id} за ${period} снизилось более, чем на ${threshold}%. Текущий totalSupply LP: ${currValue.toFixed(
-      2
-    )}. Среднее значение: ${avgValue.toFixed(2)}`
-    const message = key.toUpperCase() === 'TVL' ? messageTvl : messageApy
-    const lastAlertTS = alertsTS[strategy_id][key]
-      ? alertsTS[strategy_id][key]
+    
+    const messageApy = `Стратегия ${strategy_id}: превышен порог ${threshold}% отклонения текущего значения ${key.toUpperCase()} от среднего ${key.toUpperCase()} за ${period}. Текущее значение: ${parseFloat(currValue).toFixed(2)}% (Среднее значение ${parseFloat(avgValue).toFixed(2)}%)`
+    const messageTvl = `Среднее значение total staked ${strategy_id} за ${period} снизилось более, чем на ${threshold}%. Текущий totalSupply LP: ${parseFloat(currValue).toFixed(2)}. Среднее значение: ${parseFloat(avgValue).toFixed(2)}`
+    const message = key.toUpperCase() === 'TVL' ? messageTvl : messageApy;
+    const lastAlertTS = alertsTS[strategy_id]
+      ? alertsTS[strategy_id][key]? alertsTS[strategy_id][key] : 0
       : 0
     const now = Math.floor(Date.now() / 1000)
     const diff = now - lastAlertTS
@@ -179,6 +177,11 @@ const sendAlert = async (
         await sendMessageToMessageBird(message)
       }
     }
+  }}
+  catch (error) {
+
+    console.log(error);
+    
   }
 }
 
