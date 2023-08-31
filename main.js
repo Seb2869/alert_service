@@ -2,6 +2,7 @@ import { apyLoadCheck } from "./monitoringApyTvl.js";
 import { poolCheck } from "./monitoringPools.js";
 import { eventCheck } from "./monitoringVaults.js";
 import { getPgPool } from "./utils/postgres.js";
+import { piCheck } from "./monitoringPI.js";
 
 const execute = async (fn, params, interval) => {
     try {
@@ -31,6 +32,8 @@ const pgClient = getPgPool();
     await execute(eventCheck, [pgClient], interval2Min);
     await execute(poolCheck, [pgClient], interval10Min);
     await execute(apyLoadCheck, [pgClient], interval5Min);
+    await execute(piCheck, [], interval10Min);
+
 
 })();
 
