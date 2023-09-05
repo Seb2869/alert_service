@@ -15,6 +15,7 @@ export const ARB_NODE = process.env.ARBITRUM_NODE;
 export const dbName = process.env.DB_NAME;
 export const messagebirdUrl = process.env.MESSAGEBIRD_URL;
 export const discordUrl = process.env.DISCORD_URL;
+export const discordPIUrl = process.env.DISCORD_PI_WEBHOOK_URL;
 
 export const depositUrl = process.env.DISCORD_DEPOSIT_WEBHOOK_URL;
 export const withdrawUrl = process.env.DISCORD_WITHDRAW_WEBHOOK_URL;

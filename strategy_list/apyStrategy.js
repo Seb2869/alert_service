@@ -98,7 +98,7 @@ export const strategies = [
 
   /* {
         strategy_id: 'CONVEX_FXS',
-        strategy_addr: '0x18b9430d9ab251f7C27b7F2E922d2b0AF7506526',//'0x186C4d1CDDD405E15525DF03f21E3705B9d4F659',
+        strategy_addr: '0x2C0C2E3aAd2938411319FE596A5127280e75cEaB',// '0x18b9430d9ab251f7C27b7F2E922d2b0AF7506526',//'0x186C4d1CDDD405E15525DF03f21E3705B9d4F659',
         vault_addr: '0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B',
         chain: 1,
         method: methods.getConvexApy,

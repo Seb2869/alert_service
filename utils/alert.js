@@ -1,6 +1,7 @@
 import {
     messagebirdUrl,
     discordUrl,
+    discordPIUrl,
     depositUrl,
     withdrawUrl,
     idMaksim,
@@ -49,6 +50,25 @@ export const sendMessageToDiscord = async (message) => {
         console.error('Discord: Ошибка при отправке сообщения', error);
     }
 }
+
+export const sendPIToDiscord = async (message) => {
+    try {
+        const response = await fetch(discordPIUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: message }),
+        });
+
+        if (!(response.ok)) {
+            console.error('Discord: Ошибка при отправке сообщения');
+        }
+    } catch (error) {
+        console.error('Discord: Ошибка при отправке сообщения', error);
+    }
+}
+
 
 export const sendTxMessage = async (content, eventType) => {
     let webhookUrl;

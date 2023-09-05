@@ -10,7 +10,7 @@ export const swapPrice = [
     tokenBName: 'ETH',
     toToken: ETH,
     amount1: '60000000000000000000',
-    amount0: '6000000000000000000',
+    amount0: '60000000000000000',
     chain: 1,
   },
   {
@@ -19,7 +19,7 @@ export const swapPrice = [
     tokenBName: 'ETH',
     toToken: ETH,
     amount1: '60000000000000000000',
-    amount0: '6000000000000000000',
+    amount0: '60000000000000000',
     chain: 1
   },
    {
@@ -27,7 +27,7 @@ export const swapPrice = [
     fromToken: '0xfcc5c47be19d06bf83eb04298b026f81069ff65b',
     tokenBName: 'CRV',
     amount1: '127305000000000000000000',
-    amount0: '12730500000000000000000',
+    amount0: '127305000000000000000',
     toToken: '0xd533a949740bb3306d119cc777fa900ba034cd52',
     chain: 1
   },
@@ -36,7 +36,7 @@ export const swapPrice = [
     fromToken: '0xd533a949740bb3306d119cc777fa900ba034cd52',
     tokenBName: 'USDC',
     amount1: '127305000000000000000000',
-    amount0: '12730500000000000000000',
+    amount0: '127305000000000000000',
     toToken: ethUSDC,
     chain: 1
   },
@@ -45,7 +45,7 @@ export const swapPrice = [
     fromToken: '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0',
     tokenBName: 'USDC',
     amount1: '10400000000000000000000',
-    amount0: '1040000000000000000000',
+    amount0: '10400000000000000000',
     toToken: ethUSDC,
     chain: 1
   },
@@ -54,7 +54,7 @@ export const swapPrice = [
     fromToken: '0xc0c293ce456ff0ed870add98a0828dd4d2903dbf',
     tokenBName: 'USDC',
     amount1: '60000000000000000000000',
-    amount0: '6000000000000000000000',
+    amount0: '60000000000000000000',
     toToken: ethUSDC,
     chain: 1
   },
@@ -63,7 +63,7 @@ export const swapPrice = [
     fromToken: '0x616e8bfa43f920657b3497dbf40d6b1a02d4608d',
     tokenBName: 'USDC',
     amount1: '6000000000000000000000',
-    amount0: '600000000000000000000',
+    amount0: '6000000000000000000',
     toToken: ethUSDC,
     chain: 1
   },
@@ -72,7 +72,7 @@ export const swapPrice = [
     fromToken: '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
     tokenBName: 'ETH',
     amount1: '20000000000000000000000',
-    amount0: '2000000000000000000000',
+    amount0: '20000000000000000000',
     toToken: ETH,
     chain: 1
   },
@@ -81,7 +81,7 @@ export const swapPrice = [
     fromToken: '0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a',
     tokenBName: 'USDC',
     amount1: '700000000000000000000',
-    amount0: '70000000000000000000',
+    amount0: '700000000000000000',
     toToken: arbUSDC,
     chain: 42161
   },
@@ -90,7 +90,7 @@ export const swapPrice = [
     fromToken: '0x18c11fd286c5ec11c3b683caa813b77f5163a122',
     tokenBName: 'USDC',
     amount1: '700000000000000000000',
-    amount0: '700000000000000000000',
+    amount0: '700000000000000000',
     toToken: arbUSDC,
     chain: 42161
   },
@@ -99,7 +99,7 @@ export const swapPrice = [
     fromToken: '0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07',
     tokenBName: 'USDC',
     amount1: '80000000000000000000000',
-    amount0: '8000000000000000000000',
+    amount0: '80000000000000000000',
     toToken: arbUSDC,
     chain: 42161
   },
@@ -108,7 +108,7 @@ export const swapPrice = [
     fromToken: '0x4945970EfeEc98D393b4b979b9bE265A3aE28A8B',
     tokenBName: 'USDC',
     amount1: '600000000000000000000',
-    amount0: '60000000000000000000',
+    amount0: '600000000000000000',
     toToken: arbUSDC,
     chain: 42161
   } 
