@@ -63,7 +63,7 @@ export const strategiesTVL = [
         abi: totalSupplyAbi,
         method: 'totalSupply',
     }, */
-  {
+   {
     strategy_id: 'AURA_RETHETH',
     chain: 1,
     contractAddress: AURA_RETHETH_TVL,
@@ -153,13 +153,13 @@ export const strategiesTVL = [
     abi: joeBalanceAbi,
     method: 'internalJoeBalance',
     decimal: 18,
-  },
+  }, 
   {
     strategy_id: 'POLYGON_STABLE',
     chain: 137,
     contractAddress: POLYGON_STABLE_TVL,
     abi: totalSupplyAbi,
     method: 'totalSupply',
-    decimal: 18,
+    decimal: 9,
   }
 ]
