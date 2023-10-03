@@ -22,6 +22,8 @@ const calculatePriceImpact = (
   ) {
     const price0 = smallAmountPrice / parseInt(smallAmount);
     const price1 = largeAmountPrice / parseInt(largeAmount);
+    // console.log(smallAmountPrice, parseInt(smallAmount),price0 )
+    // console.log(largeAmountPrice, parseInt(largeAmount),price1 )
     const impact = ((price1 - price0) / price0) * 100;
     return impact;
   } else {
@@ -100,6 +102,7 @@ const checkPI = async (token, pgClient, provider, alertsTS) => {
       amount1,
       chain
     );
+    // console.log(tokenAName, tokenBName, smallAmountPrice,largeAmountPrice );
     const impact = calculatePriceImpact(
       smallAmountPrice,
       largeAmountPrice,
@@ -109,8 +112,8 @@ const checkPI = async (token, pgClient, provider, alertsTS) => {
     const alert = await checkImpact(impact, tokenAName + tokenBName, pgClient); // проверить и сохранить
 
     if (alert) {
-     // await sendMessageToDiscord(
-       console.log(
+     await sendMessageToDiscord(
+       //console.log(
         `Warning: Price Impact for swapping ${tokenAName} to ${tokenBName} is more than x2 of average. Actual impact: ${impact.toFixed(4)}%`
       );
       return false; // Indicate that this token pair has high price impact

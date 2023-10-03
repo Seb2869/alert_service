@@ -17,6 +17,8 @@ const POOL_CURVE_FRAX_USDC = '0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2'
 
 const POOL_FRAX_FXS = '0x03B59Bd1c8B9F6C265bA0c3421923B93f15036Fa'
 
+const POOL_USDC_USDR = '0xd17cb0f162f133e339c0bbfc18c36c357e681d6b'
+
 const FRAX_FXS_TOKENS = [
   '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',
   '0x853d955aCEf822Db058eb8505911ED77F175b99e'
@@ -204,6 +206,18 @@ export const pools = [
     params: [FRAX_FXS_TOKENS],
     needPrice: true,
     message: `Доля "FRAX" превышает {threshold}% от общего баланса в пуле Frax. Доля "FRAX": {percent}% `,
+    status: true
+  },
+  {
+    poolId: 'POOL_USDC_USDR',
+    chain: 137,
+    contractAddress: POOL_USDC_USDR,
+    method: methods.getPolygonPoolBalance,
+    threshold: 55,
+    params: [],
+    needPrice: false,
+    message: `Доля "USDR" превышает {threshold}% от общего баланса в пуле Polygon USDC/USDR. Доля "USDR": {percent}% `,
+    decimals: [6, 9],
     status: true
   }
 ]

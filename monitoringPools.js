@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { ETH_NODE, ARB_NODE } from "./utils/utils.js";
+import { ETH_NODE, ARB_NODE, POLYGON_NODE } from "./utils/utils.js";
 import { getAlertsTS, writeAlertTs } from "./utils/database.js";
 import { pools } from "./strategy_list/pools.js";
 import { getPriceForDefiLama } from "./utils/price.js";
@@ -76,9 +76,11 @@ export const poolCheck = async (pgClient) => {
     try {
         const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
         const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
+        const plgProvider = new ethers.JsonRpcProvider(POLYGON_NODE);
         const provider = {
             1: ethProvider,
             42161: arbProvider,
+            137: plgProvider,
         };
         const resultCheck = await loadAllPools(provider, pgClient);
         return resultCheck;

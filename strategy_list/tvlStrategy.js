@@ -37,6 +37,8 @@ const GMD_ADDRESS = '0x48c81451d1fddeca84b47ff86f91708fa5c32e93'
 // SJOE_STAKING
 const SJOE_TVL = '0x43646A8e839B2f2766392C1BF8f60F6e587B6960'
 
+const POLYGON_STABLE_TVL = '0xd17cb0f162f133e339c0bbfc18c36c357e681d6b';
+
 const totalSupplyAbi = [
   `function totalSupply() external view returns (uint256)`
 ]
@@ -66,35 +68,40 @@ export const strategiesTVL = [
     chain: 1,
     contractAddress: AURA_RETHETH_TVL,
     abi: totalSupplyAbi,
-    method: 'totalSupply'
+    method: 'totalSupply',
+    decimal: 18,
   },
   {
     strategy_id: 'AURA_AURAWETH',
     chain: 1,
     contractAddress: AURA_AURAWETH_TVL,
     abi: totalSupplyAbi,
-    method: 'totalSupply'
+    method: 'totalSupply',
+    decimal: 18,
   },
   {
     strategy_id: 'AURA_BAL',
     chain: 1,
     contractAddress: AURA_BAL_TVL,
     abi: totalSupplyAbi,
-    method: 'totalSupply'
+    method: 'totalSupply',
+    decimal: 18,
   },
   {
     strategy_id: 'CONVEX_FXS',
     chain: 1,
     contractAddress: CONVEX_FXS_TVL,
     abi: totalSupplyAbi,
-    method: 'totalSupply'
+    method: 'totalSupply',
+    decimal: 18,
   },
   {
     strategy_id: 'CONVEX_CVX',
     chain: 1,
     contractAddress: CONVEX_CVX_TVL,
     abi: totalSupplyAbi,
-    method: 'totalSupply'
+    method: 'totalSupply',
+    decimal: 18,
   },
   {
     strategy_id: 'GMX_GMX',
@@ -102,14 +109,16 @@ export const strategiesTVL = [
     contractAddress: GMX_TVL,
     abi: balanceOfAbi,
     method: 'balanceOf',
-    params: [GMX_ADDRESS]
+    params: [GMX_ADDRESS],
+    decimal: 18,
   },
   {
     strategy_id: 'FRAX_SFRXETHETH',
     chain: 1,
     contractAddress: FRAX_SFRXETHETH_TVL,
     abi: totalAssetsAbi,
-    method: 'totalAssets'
+    method: 'totalAssets',
+    decimal: 18,
   },
   {
     strategy_id: 'GMD_STAKING',
@@ -117,14 +126,16 @@ export const strategiesTVL = [
     contractAddress: GMD_TVL,
     abi: balanceOfAbi,
     method: 'balanceOf',
-    params: [GMD_ADDRESS]
+    params: [GMD_ADDRESS],
+    decimal: 18,
   },
   {
     strategy_id: 'YEARN_YCRV',
     chain: 1,
     contractAddress: YEARN_YCRV_TVL,
     abi: totalAssetsAbi,
-    method: 'totalAssets'
+    method: 'totalAssets',
+    decimal: 18,
   },
   {
     strategy_id: 'GAINS_GNS',
@@ -132,13 +143,23 @@ export const strategiesTVL = [
     contractAddress: GNS_TVL,
     abi: balanceOfAbi,
     method: 'balanceOf',
-    params: [GNS_ADDRESS]
+    params: [GNS_ADDRESS],
+    decimal: 18,
   },
   {
     strategy_id: 'SJOE_STAKING',
     chain: 42161,
     contractAddress: SJOE_TVL,
     abi: joeBalanceAbi,
-    method: 'internalJoeBalance'
+    method: 'internalJoeBalance',
+    decimal: 18,
+  },
+  {
+    strategy_id: 'POLYGON_STABLE',
+    chain: 137,
+    contractAddress: POLYGON_STABLE_TVL,
+    abi: totalSupplyAbi,
+    method: 'totalSupply',
+    decimal: 18,
   }
 ]

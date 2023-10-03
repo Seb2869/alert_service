@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import {
   ETH_NODE,
   ARB_NODE,
+  POLYGON_NODE,
   threshold1,
   threshold2,
   calculateDeviationPercent,
@@ -57,7 +58,7 @@ const saveApyStatsToPG = async (pgClient, data) => {
           `('${item.strategy_id}', ${item.tvl}, ${item.apy}, ${item.timestamp})`
       )
       .join(', ')
-    const queryText = `INSERT INTO alerts_apy_stats (strategy_id, tvl, apy, timestamp) VALUES ${values}`
+    const queryText = `INSERT INTO alerts_apy_stats (strategy_id, tvl, apy, timestamp) VALUES ${values}`;
     await pgClient.query(queryText)
   } catch (error) {
     console.error('Error in transaction:', error)
@@ -69,7 +70,7 @@ const saveTvlStatsToPG = async (pgClient, data) => {
     const values = data
       .map(item => `('${item.strategy_id}', ${item.tvl}, ${item.timestamp})`)
       .join(', ')
-    const queryText = `INSERT INTO alerts_tvl_stats (strategy_id, tvl, timestamp) VALUES ${values}`
+    const queryText = `INSERT INTO alerts_tvl_stats (strategy_id, tvl, timestamp) VALUES ${values}`;
     await pgClient.query(queryText)
   } catch (error) {
     console.error('Error in transaction:', error)
@@ -133,7 +134,7 @@ const checkApyTvl = async (pgClient, alertsTS) => {
   const now = Math.floor(Date.now() / 1000)
   const dateDayAgo = now - oneDay
   const date7DayAgo = now - oneWeek
-  const lastData = await getLastData(pgClient, dateDayAgo, date7DayAgo)
+  const lastData = await getLastData(pgClient, dateDayAgo, date7DayAgo);
   await Promise.all(
     lastData.map(async data => {
       Object.entries(data).forEach(([key, valueArray]) => {
@@ -169,12 +170,12 @@ const sendAlert = async (
     const diff = now - lastAlertTS
     const timeDiff = 3600 * 12
     if (diff > timeDiff) {
-      const newRow = lastAlertTS === 0 ? true : false
+      const newRow = lastAlertTS === 0 ? true : false;
       await writeAlertTs(pgClient, strategy_id, key, now, newRow)
-      console.log(message)
-      await sendMessageToDiscord(message)
+      console.log(message);
+      // await sendMessageToDiscord(message)
       if (call) {
-        await sendMessageToMessageBird(message)
+       // await sendMessageToMessageBird(message)
       }
     }
   }}
@@ -186,9 +187,14 @@ const sendAlert = async (
 }
 
 const checkPercent = async (pgClient, strategy, key, alertsTS) => {
+  let TH1 = threshold1;
+  let TH2 = threshold2;
   const { strategy_id, last_value, avg_value_daily, avg_value_7_days } =
     strategy
-
+  if (strategy_id === 'POLYGON_STABLE') {
+    TH1 = 20;
+    TH2 = 40;
+  }
   const deviationPercentDaily = calculateDeviationPercent(
     last_value,
     avg_value_daily
@@ -198,8 +204,8 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
     avg_value_7_days
   )
   if (
-    deviationPercentDaily > threshold1 &&
-    deviationPercentDaily < threshold2
+    deviationPercentDaily > TH1 &&
+    deviationPercentDaily < TH2
   ) {
     await sendAlert(
       pgClient,
@@ -213,8 +219,8 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
       false
     )
   } else if (
-    deviationPercent7Days > threshold1 &&
-    deviationPercent7Days < threshold2
+    deviationPercent7Days > TH1 &&
+    deviationPercent7Days < TH2
   ) {
     await sendAlert(
       pgClient,
@@ -228,8 +234,9 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
       false
     )
   }
-  if (deviationPercentDaily > threshold2) {
+  if (deviationPercentDaily > TH2) {
     await sendAlert(
+      pgClient,
       strategy_id,
       threshold2,
       key,
@@ -239,8 +246,9 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
       'день',
       true
     )
-  } else if (deviationPercent7Days > threshold2) {
+  } else if (deviationPercent7Days > TH2) {
     await sendAlert(
+      pgClient,
       strategy_id,
       threshold2,
       key,
@@ -254,16 +262,16 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
 }
 
 const getTvl = async (strategy, provider) => {
-  const { strategy_id, contractAddress, abi, method, params, chain } = strategy
+  const { strategy_id, contractAddress, abi, method, params, chain, decimal } = strategy
   const stratProvider = provider[chain]
   const contract = new ethers.Contract(contractAddress, abi, stratProvider)
-  let result
+  let result;
   if (params && params.length > 0) {
     result = await contract[method](...params)
   } else {
     result = await contract[method]()
   }
-  const tvl = ethers.formatEther(result)
+  const tvl = ethers.formatUnits(result, decimal)
   return { strategy_id, tvl, timestamp: Math.floor(Date.now() / 1000) }
 }
 
@@ -283,9 +291,11 @@ export const apyLoadCheck = async pgClient => {
   try {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE)
     const arbProvider = new ethers.JsonRpcProvider(ARB_NODE)
+    const plgProvider = new ethers.JsonRpcProvider(POLYGON_NODE)
     const provider = {
       1: ethProvider,
-      42161: arbProvider
+      42161: arbProvider,
+      137: plgProvider,
     }
     const resultLoad = await loadAPY(provider, pgClient)
     const resultLoadTvl = await loadTVL(provider, pgClient)

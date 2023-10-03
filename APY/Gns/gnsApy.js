@@ -1,12 +1,14 @@
 import { ethers } from "ethers";
 import { getBalanceTVL } from "../apyTvlMethods.js";
 
-
 const aprToApy = (apr, compoundFrequency = 365) => {
-    return (
-        ((1 + (apr * 0.01) / compoundFrequency) ** compoundFrequency - 1) * 100
-    );
-}
+	if (apr) {
+		return (
+			((1 + (apr * 0.01) / compoundFrequency) ** compoundFrequency - 1) *
+			100
+		);
+	} else return 0;
+};
 
 /* export const getGnsApy = async (provider, GAINS_GNS, userAddress, GNS_TVL, prices) => {
     const gnstakingContactABI = [
@@ -38,20 +40,20 @@ users[0x4da9fb66734f9d7936232bcf64dacc24406595c1]
 // 3%
 
 export const getGnsApy = async (provider, STAKING, GNS_TVL, prices) => {
-    const gnsPrice = prices['gains-network'] ? prices['gains-network']['usd'] : 0;
-    const tvlContract = new ethers.Contract(
-        GNS_TVL,
-        [`function balanceOf(address) external view returns (uint256)`],
-        provider);
-    const balance = ethers.formatEther(await tvlContract.balanceOf(STAKING));
-    const tvl = +balance * gnsPrice;
-    const response = await fetch(`https://backend-arbitrum.gains.trade/apr`);
-    const responseText = await response.text();
-    const aprData = JSON.parse(responseText);
-    const apr =  aprData.sssBaseApr;
-    const apy = aprToApy(apr);
-    return [apy, tvl]
-}
-
-
-
+	const gnsPrice = prices["gains-network"]
+		? prices["gains-network"]["usd"]
+		: 0;
+	const tvlContract = new ethers.Contract(
+		GNS_TVL,
+		[`function balanceOf(address) external view returns (uint256)`],
+		provider
+	);
+	const balance = ethers.formatEther(await tvlContract.balanceOf(STAKING));
+	const tvl = +balance * gnsPrice;
+	const response = await fetch(`https://backend-arbitrum.gains.trade/apr`);
+	const responseText = await response.text();
+	const aprData = JSON.parse(responseText);
+	const apr = aprData.sssApr;
+	const apy = aprToApy(apr);
+	return [apy, tvl];
+};
