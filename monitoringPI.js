@@ -68,7 +68,7 @@ const checkImpact = async (impact, name, pgClient) => {
     }
     await pgClient.query(insertQuery);
     // console.log(impact, avg_price_impact, impact / avg_price_impact);
-    if (impact / avg_price_impact > 2) return true;
+    if (impact>4 && impact / avg_price_impact > 2) return true;
     else return false;
   } catch (error) {
     console.log(error);
