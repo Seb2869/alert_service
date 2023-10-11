@@ -12,6 +12,6 @@ export const getPolygonPoolBalance = async (provider, contractAddress, threshold
     const totalBalance = parseFloat(balance0)+ parseFloat(balance1);
     const percentBalance = (parseFloat(balance1) / totalBalance) * 100;
     if (percentBalance > threshold)
-        return [true, [percentBalance]]
-    else return [false, [percentBalance]];
+        return [true, percentBalance]
+    else return [false, percentBalance];
 }

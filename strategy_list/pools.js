@@ -49,6 +49,8 @@ const AURA_RETH_TOKENS = [
   '0xae78736Cd615f374D3085123A210448E74Fc6393'
 ]
 
+const OVERNIGHT = '0xe80772Eaf6e2E18B651F160Bc9158b2A5caFCA65';
+
 export const pools = [
   {
     poolId: 'POOL_CURVE_CVX_FXS',
@@ -219,5 +221,17 @@ export const pools = [
     message: `Доля "USDR" превышает {threshold}% от общего баланса в пуле Polygon USDC/USDR. Доля "USDR": {percent}% `,
     decimals: [6, 9],
     status: true
+  },
+  {
+    poolId: 'Overnight',
+    chain: 10,
+    contractAddress: OVERNIGHT,
+    method: methods.getOvernightPause,
+    threshold: 0,
+    params: [],
+    needPrice: false,
+    message: `OPTIMISM Overnight USD+/USDC Paused = TRUE`,
+    status: true
   }
+
 ]

@@ -42,9 +42,14 @@ const getSwapApy = async (id) => {
   })
 
   const responseText = await response.text()
-  const result = JSON.parse(responseText)
-  const breakdownValues = getBreakdownValuesById(result.pools[1], id)
-  return breakdownValues
+  try {
+    const result = JSON.parse(responseText)
+    const breakdownValues = getBreakdownValuesById(result.pools[1], id)
+    return breakdownValues
+  }
+  catch {
+    return [0]
+  }
 }
 
 export const getAuraApyLp = async (

@@ -6,7 +6,8 @@ import {
   threshold1,
   threshold2,
   calculateDeviationPercent,
-  getAndFormatDate
+  getAndFormatDate,
+  OPTIMISM_NODE
 } from './utils/utils.js'
 import { getLastData, writeAlertTs, getAlertsTS } from './utils/database.js'
 import {
@@ -172,10 +173,10 @@ const sendAlert = async (
     if (diff > timeDiff) {
       const newRow = lastAlertTS === 0 ? true : false;
       await writeAlertTs(pgClient, strategy_id, key, now, newRow)
-      console.log(message);
-      // await sendMessageToDiscord(message)
+      // console.log(message);
+      await sendMessageToDiscord(message)
       if (call) {
-       // await sendMessageToMessageBird(message)
+       await sendMessageToMessageBird(message)
       }
     }
   }}
@@ -194,6 +195,10 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
   if (strategy_id === 'POLYGON_STABLE') {
     TH1 = 20;
     TH2 = 40;
+  }
+  if (strategy_id === 'OPTIMISM USD+/USDC') {
+    TH1 = 20;
+    TH2 = 100;
   }
   const deviationPercentDaily = calculateDeviationPercent(
     last_value,
@@ -265,11 +270,13 @@ const getTvl = async (strategy, provider) => {
   const { strategy_id, contractAddress, abi, method, params, chain, decimal } = strategy
   const stratProvider = provider[chain]
   const contract = new ethers.Contract(contractAddress, abi, stratProvider)
+  
   let result;
   if (params && params.length > 0) {
     result = await contract[method](...params)
   } else {
     result = await contract[method]()
+   
   }
   const tvl = ethers.formatUnits(result, decimal)
   return { strategy_id, tvl, timestamp: Math.floor(Date.now() / 1000) }
@@ -292,10 +299,12 @@ export const apyLoadCheck = async pgClient => {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE)
     const arbProvider = new ethers.JsonRpcProvider(ARB_NODE)
     const plgProvider = new ethers.JsonRpcProvider(POLYGON_NODE)
+    const optProvider = new ethers.JsonRpcProvider(OPTIMISM_NODE)
     const provider = {
       1: ethProvider,
       42161: arbProvider,
       137: plgProvider,
+      10: optProvider,
     }
     const resultLoad = await loadAPY(provider, pgClient)
     const resultLoadTvl = await loadTVL(provider, pgClient)

@@ -38,6 +38,7 @@ const GMD_ADDRESS = '0x48c81451d1fddeca84b47ff86f91708fa5c32e93'
 const SJOE_TVL = '0x43646A8e839B2f2766392C1BF8f60F6e587B6960'
 
 const POLYGON_STABLE_TVL = '0xd17cb0f162f133e339c0bbfc18c36c357e681d6b';
+const OPTIMISM_STABLE_TVL = '0xd95E98fc33670dC033424E7Aa0578D742D00f9C7';
 
 const totalSupplyAbi = [
   `function totalSupply() external view returns (uint256)`
@@ -158,6 +159,14 @@ export const strategiesTVL = [
     strategy_id: 'POLYGON_STABLE',
     chain: 137,
     contractAddress: POLYGON_STABLE_TVL,
+    abi: totalSupplyAbi,
+    method: 'totalSupply',
+    decimal: 9,
+  },
+  {
+    strategy_id: 'OPTIMISM USD+/USDC',
+    chain: 10,
+    contractAddress: OPTIMISM_STABLE_TVL,
     abi: totalSupplyAbi,
     method: 'totalSupply',
     decimal: 9,

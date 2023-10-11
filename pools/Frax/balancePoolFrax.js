@@ -15,6 +15,6 @@ export const getFraxPoolBalance = async (provider, contractAddress, threshold, d
     const totalBalance = parseFloat(balanceUsd0)+ parseFloat(balanceUsd1);
     const percentBalance = (parseFloat(balanceUsd1) / totalBalance) * 100;
     if (percentBalance > threshold)
-        return [true, [percentBalance]]
-    else return [false, [percentBalance]];
+        return [true, percentBalance]
+    else return [false, percentBalance];
 }

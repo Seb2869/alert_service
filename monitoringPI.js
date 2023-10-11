@@ -68,8 +68,9 @@ const checkImpact = async (impact, name, pgClient) => {
     }
     await pgClient.query(insertQuery);
     // console.log(impact, avg_price_impact, impact / avg_price_impact);
-    if (impact>4 && impact / avg_price_impact > 2) return true;
-    else return false;
+    /* if (impact>4 && impact / avg_price_impact > 3) return true;
+    else */ 
+      return false;
   } catch (error) {
     console.log(error);
     return false;
@@ -138,7 +139,7 @@ const checkPI = async (token, pgClient, provider, alertsTS) => {
       }
       return true; // Indicate that this token pair has acceptable price impact
     }
-  } catch {
+  } catch (error) {
     console.log(error);
   }
 };

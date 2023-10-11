@@ -13,6 +13,7 @@ dotenv.config({
 export const ETH_NODE = process.env.ETHEREUM_NODE;
 export const ARB_NODE = process.env.ARBITRUM_NODE;
 export const POLYGON_NODE = process.env.POLYGON_NODE;
+export const OPTIMISM_NODE = process.env.OPTIMISM_NODE;
 
 export const dbName = process.env.DB_NAME;
 export const messagebirdUrl = process.env.MESSAGEBIRD_URL;

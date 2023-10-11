@@ -18,10 +18,11 @@ export const getCurve3poolBalance = async (provider, contractAddress, threshold,
     const percentBalance2 = (parseFloat(balanceUsd2) / totalBalance) * 100;
 
     if (percentBalance0 > threshold || percentBalance1 > threshold || percentBalance2 > threshold || percentBalance0+percentBalance2 > 75) {
-        return [true, [percentBalance0, percentBalance1,percentBalance2 ]]
+        let percent = Math.max(percentBalance0, percentBalance1,percentBalance2);
+        return [true, percent]
     }
     else {
-        return [false, [percentBalance0, percentBalance1,percentBalance2]]
+        return [false, 0]
     }
 };
 
@@ -35,8 +36,8 @@ export const getCurvePoolBalance = async (provider, contractAddress, threshold, 
     const totalBalance = parseFloat(balanceUsd0)+ parseFloat(balanceUsd1);
     const percentBalance = (parseFloat(balanceUsd1) / totalBalance) * 100;
     if (percentBalance > threshold)
-        return [true, [percentBalance]]
-    else return [false, [percentBalance]];
+        return [true, percentBalance]
+    else return [false, percentBalance];
 }
 
 
