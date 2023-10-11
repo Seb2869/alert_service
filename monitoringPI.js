@@ -127,7 +127,7 @@ const checkPI = async (token, pgClient, provider, alertsTS) => {
         : 0;
       const now = Math.floor(Date.now() / 1000);
       const diff = now - lastAlertTS;
-      const timeDiff = 3600 * 12;
+      const timeDiff = 3600 * 4;
       if (diff > timeDiff) {
         const newRow = lastAlertTS === 0 ? true : false;
         await writeAlertTs(pgClient, strategy_id, "pi", now, newRow);
