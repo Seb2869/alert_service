@@ -155,14 +155,14 @@ export const strategiesTVL = [
     method: 'internalJoeBalance',
     decimal: 18,
   }, 
-  {
+  /* {
     strategy_id: 'POLYGON_STABLE',
     chain: 137,
     contractAddress: POLYGON_STABLE_TVL,
     abi: totalSupplyAbi,
     method: 'totalSupply',
     decimal: 9,
-  },
+  }, */
   {
     strategy_id: 'OPTIMISM USD+/USDC',
     chain: 10,

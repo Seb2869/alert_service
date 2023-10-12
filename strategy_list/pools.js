@@ -210,7 +210,7 @@ export const pools = [
     message: `Доля "FRAX" превышает {threshold}% от общего баланса в пуле Frax. Доля "FRAX": {percent}% `,
     status: true
   },
-  {
+  /* {
     poolId: 'POOL_USDC_USDR',
     chain: 137,
     contractAddress: POOL_USDC_USDR,
@@ -221,7 +221,7 @@ export const pools = [
     message: `Доля "USDR" превышает {threshold}% от общего баланса в пуле Polygon USDC/USDR. Доля "USDR": {percent}% `,
     decimals: [6, 9],
     status: true
-  },
+  }, */
   {
     poolId: 'Overnight',
     chain: 10,
