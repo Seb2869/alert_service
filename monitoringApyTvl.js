@@ -2,7 +2,6 @@ import { ethers } from 'ethers'
 import {
   ETH_NODE,
   ARB_NODE,
-  POLYGON_NODE,
   threshold1,
   threshold2,
   calculateDeviationPercent,
@@ -192,10 +191,6 @@ const checkPercent = async (pgClient, strategy, key, alertsTS) => {
   let TH2 = threshold2;
   const { strategy_id, last_value, avg_value_daily, avg_value_7_days } =
     strategy
-  if (strategy_id === 'POLYGON_STABLE') {
-    TH1 = 20;
-    TH2 = 40;
-  }
   if (strategy_id === 'OPTIMISM USD+/USDC') {
     TH1 = 20;
     TH2 = 100;
@@ -298,7 +293,6 @@ export const apyLoadCheck = async pgClient => {
   try {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE)
     const arbProvider = new ethers.JsonRpcProvider(ARB_NODE)
-    const plgProvider = new ethers.JsonRpcProvider(POLYGON_NODE)
     const optProvider = new ethers.JsonRpcProvider(OPTIMISM_NODE)
     const provider = {
       1: ethProvider,
