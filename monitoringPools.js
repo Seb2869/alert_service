@@ -108,7 +108,6 @@ export const poolCheck = async (pgClient) => {
 		const provider = {
 			1: ethProvider,
 			42161: arbProvider,
-			137: plgProvider,
 			10: optProvider,
 		};
 

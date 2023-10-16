@@ -297,7 +297,6 @@ export const apyLoadCheck = async pgClient => {
     const provider = {
       1: ethProvider,
       42161: arbProvider,
-      137: plgProvider,
       10: optProvider,
     }
     const resultLoad = await loadAPY(provider, pgClient)
