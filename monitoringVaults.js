@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { ETH_NODE, ARB_NODE } from "./utils/utils.js";
+import { ETH_NODE, ARB_NODE, OPTIMISM_NODE } from "./utils/utils.js";
 import { getLastBlock, writeLastBlock } from "./utils/database.js";
 import { vaults } from "./strategy_list/vault.js";
 import { getPriceForDefiLama } from "./utils/price.js";
@@ -38,14 +38,17 @@ export const loadAllEvent = async (provider, pgClient, scan, last_blocks, ethPri
 export const eventCheck = async (pgClient) => {
     const ethProvider = new ethers.JsonRpcProvider(ETH_NODE);
     const arbProvider = new ethers.JsonRpcProvider(ARB_NODE);
+    const optProvider = new ethers.JsonRpcProvider(OPTIMISM_NODE);
     const lastBlocks = await getLastBlock(pgClient);
     const provider = {
         1: ethProvider,
         42161: arbProvider,
+        10: optProvider
     };
     const scan = {
         1: 'https://etherscan.io',
         42161: 'https://arbiscan.io',
+        10: 'https://optimistic.etherscan.io'
     };
     const ethPrice = await getPriceForDefiLama('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
     const resultCheck = await loadAllEvent(provider, pgClient, scan, lastBlocks, ethPrice);
