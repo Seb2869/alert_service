@@ -33,6 +33,7 @@ const calculatePriceImpact = (
 
 const fetchPrice = async (fromToken, toToken, amount, chain) => {
   try {
+    // console.log(`${BASE_URL}${chain}/quote?src=${fromToken}&dst=${toToken}&amount=${amount}`);
     const response = await fetch(
       `${BASE_URL}${chain}/quote?src=${fromToken}&dst=${toToken}&amount=${amount}`,
       {
@@ -47,7 +48,7 @@ const fetchPrice = async (fromToken, toToken, amount, chain) => {
     // console.log(fromToken, toToken,data.toAmount, data );
     return parseFloat(data.toAmount);
   } catch (error) {
-    console.log(error);
+    console.log("1inch error");
     return 0;
   }
 };

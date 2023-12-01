@@ -52,14 +52,22 @@ export const getDataFromSG = async (graph, qs, table) => {
     const answer = resp["data"][table];
     return answer;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('SubGraph Error:', error);
     return false;
   }
 }
 
 export const fetchData = async (url) => {
   const response = await fetch(url);
-  return await response.json();
+  try {
+  const res = await response.json();
+  return res;
+  }
+  catch (error) {
+    console.log("fetch error")
+    return undefined
+
+  }
 }
 
 
