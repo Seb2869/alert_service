@@ -25,7 +25,8 @@ export const vaults = [
     vaultId: 'lvETH_v2',
     chain: 1,
     decimals: 18,
-    contractAddress: lvETH_v2
+    contractAddress: lvETH_v2,
+    token: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
   },
   {
     vaultId: 'lvDCI',
@@ -37,7 +38,8 @@ export const vaults = [
     vaultId: 'lvDCI_v2',
     chain: 1,
     decimals: 6,
-    contractAddress: lvDCI_v2
+    contractAddress: lvDCI_v2,
+    token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
   },
   {
     vaultId: 'lvAYI',
@@ -49,7 +51,8 @@ export const vaults = [
     vaultId: 'lvAYI_v2',
     chain: 42161,
     decimals: 6,
-    contractAddress: lvAYI_v2
+    contractAddress: lvAYI_v2,
+    token: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
   },
   {
     vaultId: 'lvOMV',

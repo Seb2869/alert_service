@@ -71,7 +71,7 @@ export const getPriceForDefiLama = async (address) => {
         return price;
     }
     catch (error) {
-        console.log(error);
+        console.log("getPriceForDefiLama", error);
         return null;
     }
 }

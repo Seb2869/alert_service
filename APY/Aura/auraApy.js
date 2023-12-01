@@ -47,7 +47,8 @@ const getSwapApy = async (id) => {
     const breakdownValues = getBreakdownValuesById(result.pools[1], id)
     return breakdownValues
   }
-  catch {
+  catch (e) {
+    console.log("getSwapApy", e)
     return [0]
   }
 }

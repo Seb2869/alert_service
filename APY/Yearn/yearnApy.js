@@ -1,13 +1,19 @@
 import { getTotalAssetsTVL } from "../apyTvlMethods.js";
 
 export const getYearnApy = async (provider, YEARN_CONTRACT, prices) => {
-
+	try  {
     const response = await fetch('https://ydaemon.yearn.finance/1/vaults/0x27B5739e22ad9033bcBf192059122d163b60349D');
     const responseText = await response.text();
     const data = JSON.parse(responseText);
-    const tvl = data.tvl.tvl_deposited;
-    const apy = data.apy.net_apy * 100;
+    const tvl = data.tvl.tvl;
+    const apy = data.apr.netAPR * 100;
     return [apy, tvl]
+	}
+	catch (e) {
+		console.log("getYearnApy", e);
+		return [undefined, undefined] 
+	}
+
 
 }
 

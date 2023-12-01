@@ -46,7 +46,7 @@ const fetchPrice = async (fromToken, toToken, amount, chain) => {
     const data = await response.json();
     // console.log(fromToken, toToken,data.toAmount, data );
     return parseFloat(data.toAmount);
-  } catch {
+  } catch (error) {
     console.log(error);
     return 0;
   }

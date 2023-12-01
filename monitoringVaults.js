@@ -7,13 +7,13 @@ import { getEvents } from "./deposit_withdraw/depositAndWithdraw.js";
 
 
 export const checkEvent = async (pgClient, vault, provider, scan, lastBlocks, ethPrice) => {
-    const { vaultId, chain, contractAddress,decimals } = vault;
+    const { vaultId, chain, contractAddress,decimals, token } = vault;
     const vaultProvider = provider[chain];
     const vaultScan = scan[chain];
     // const defBlock = chain===1? 17823116 : 117660826;
     const blockNumber = await vaultProvider.getBlockNumber();
     const lastBlock = lastBlocks[vaultId]?? blockNumber;
-    const result = await getEvents(vaultId, lastBlock, blockNumber, vaultProvider, vaultScan, contractAddress, decimals, ethPrice);
+    const result = await getEvents(vaultId, lastBlock, blockNumber, vaultProvider, vaultScan, contractAddress, decimals, ethPrice, token);
     if (result) {
         const newRow = lastBlocks[vaultId]? false : true;
         await writeLastBlock(pgClient, vaultId, blockNumber, newRow)

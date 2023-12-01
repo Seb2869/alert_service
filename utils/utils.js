@@ -98,6 +98,7 @@ export const getConvexGauges = async () => {
 
 
 export const getCurveApy = async () => {
+  try {
 
   const headers = {
     'authority': 'www.convexfinance.com/api/',
@@ -118,6 +119,11 @@ export const getCurveApy = async () => {
   const result = JSON.parse(responseText);
   const { apys: curveApys } = result;
   return curveApys
+}
+catch (e) {
+  console.log("getCurveApy", e);
+  return 0
+}
 }
 
 

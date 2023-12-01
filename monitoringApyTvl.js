@@ -24,6 +24,9 @@ const getApy = async (strategy, provider, prices) => {
   const network = chain === 1 ? 'ETH' : 'ARB'
   const stratProvider = provider[chain]
   const [apy, tvl] = await method(stratProvider, ...params, prices)
+  if (!apy || !tvl) {
+    return undefined
+  }
   return {
     strategy_id,
     strategy_addr,
@@ -58,8 +61,9 @@ const saveApyStatsToPG = async (pgClient, data) => {
         item =>
           `('${item.strategy_id}', ${item.tvl}, ${item.apy}, ${item.timestamp})`
       )
-      .join(', ')
+      .join(', ')  
     const queryText = `INSERT INTO alerts_apy_stats (strategy_id, tvl, apy, timestamp) VALUES ${values}`
+    // console.log(queryText);
     await pgClient.query(queryText)
   } catch (error) {
     console.error('Error in transaction:', error)
@@ -80,6 +84,7 @@ const saveTvlStatsToPG = async (pgClient, data) => {
 
 const saveToPG = async (pgClient, data) => {
   try {
+    
     const values = data
       .map(
         item =>
@@ -87,6 +92,7 @@ const saveToPG = async (pgClient, data) => {
       )
       .join(', ')
     const queryText = `INSERT INTO strategies_apy (strategy_addr, vault_addr, network, apy, created_at ) VALUES ${values}`
+    // console.log(queryText);
     await pgClient.query(queryText)
   } catch (error) {
     console.error('Error in transaction:', error)

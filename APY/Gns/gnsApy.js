@@ -40,6 +40,7 @@ users[0x4da9fb66734f9d7936232bcf64dacc24406595c1]
 // 3%
 
 export const getGnsApy = async (provider, STAKING, GNS_TVL, prices) => {
+	try {
 	const gnsPrice = prices["gains-network"]
 		? prices["gains-network"]["usd"]
 		: 0;
@@ -56,4 +57,9 @@ export const getGnsApy = async (provider, STAKING, GNS_TVL, prices) => {
 	const apr = aprData.sssApr;
 	const apy = aprToApy(apr);
 	return [apy, tvl];
+	}
+	catch (e) {
+		console.log("getGnsApy", e);
+		return [undefined, undefined]
+	}
 };
