@@ -134,7 +134,7 @@ export const pools = [
     chain: 1,
     contractAddress: POOL_CURVE_YCRV,
     method: methods.getCurvePoolBalance,
-    threshold: 75,
+    threshold: 88,
     params: [],
     needPrice: false,
     message: `Доля "yCRV" превышает {threshold}% от общего баланса в пуле curve. Доля "yCRV": {percent}% `,

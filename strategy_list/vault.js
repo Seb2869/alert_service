@@ -13,14 +13,16 @@ const lvAYI_v2 = "0x0f094f6deb056af1fa1299168188fd8c78542a07"
 
 const lvOMV = "0xd39583c9d1001c237151a5a6d4c7a7207b2c08e3"
 
+const lvOMV_v2 = "0x6c090e79A9399c0003A310E219b2D5ed4E6b0428"
+
 
 export const vaults = [
-  {
+ /*  {
     vaultId: 'lvETH',
     chain: 1,
     decimals: 18,
     contractAddress: lvETH
-  },
+  }, */
   {
     vaultId: 'lvETH_v2',
     chain: 1,
@@ -28,12 +30,12 @@ export const vaults = [
     contractAddress: lvETH_v2,
     token: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
   },
-  {
+  /* {
     vaultId: 'lvDCI',
     chain: 1,
     decimals: 6,
     contractAddress: lvDCI
-  },
+  }, */
   {
     vaultId: 'lvDCI_v2',
     chain: 1,
@@ -41,12 +43,12 @@ export const vaults = [
     contractAddress: lvDCI_v2,
     token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
   },
-  {
+  /* {
     vaultId: 'lvAYI',
     chain: 42161,
     decimals: 6,
     contractAddress: lvAYI
-  },
+  }, */
   {
     vaultId: 'lvAYI_v2',
     chain: 42161,
@@ -54,10 +56,18 @@ export const vaults = [
     contractAddress: lvAYI_v2,
     token: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
   },
-  {
+  /* {
     vaultId: 'lvOMV',
     chain: 10,
     decimals: 6,
     contractAddress: lvOMV
+  }, */
+  {
+    vaultId: 'lvOMV_v2',
+    chain: 42161,
+    decimals: 6,
+    contractAddress: lvOMV_v2,
+    token: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+
   }
 ]
